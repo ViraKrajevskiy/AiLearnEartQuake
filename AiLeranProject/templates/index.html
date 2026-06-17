@@ -477,11 +477,25 @@
         <div class="header">
             <h1>🌍 EarthquakeAI</h1>
             <span class="badge">Predict &amp; Learn</span>
-            <button class="theme-btn" id="themeToggle" title="Toggle Day/Night"><i class="fas fa-sun"></i></button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="/statistics/" style="color: var(--text); text-decoration: none; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; transition: 0.3s; cursor: pointer;"
+                   onmouseover="this.style.borderColor='#667eea'; this.style.color='#667eea';"
+                   onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text)';">
+                    📊 Statistics
+                </a>
+                <button class="theme-btn" id="themeToggle" title="Toggle Day/Night"><i class="fas fa-sun"></i></button>
+            </div>
         </div>
+
         <div class="sidebar" id="sidebar">
             <!-- Display Mode -->
             <div class="panel">
+             <div class="panel">
+                    <h3><i class="fas fa-microchip"></i> IoT Sensors</h3>
+                    <div id="iotPanel" style="font-size: 0.75em; color: var(--text);">
+                        <div style="text-align: center;">Loading sensors...</div>
+                    </div>
+                </div>
                 <h3><i class="fas fa-eye"></i> Display Mode</h3>
                 <div class="mode-toggle">
                     <button class="mode-btn active" id="modeCircles">🔵 Circles</button>
@@ -595,6 +609,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
     </script>
     <script>
+            async function loadIoTData() {
+            try {
+                const resp = await fetch('/api/iot/latest/');
+                const data = await resp.json();
+                const html = data.sensors.slice(0, 5).map(s => `
+                    <div style="padding: 6px; margin: 3px 0; background: rgba(102,126,234,0.1); border-radius: 4px;">
+                        <strong>${s.sensor_id}</strong><br>
+                        🌡️ ${s.temperature}°C | 💧 ${s.humidity}% | 📢 ${s.vibration}<br>
+                        <small>${new Date(s.timestamp).toLocaleTimeString()}</small>
+                    </div>
+                `).join('');
+                document.getElementById('iotPanel').innerHTML = html || 'No data';
+            } catch(e) {
+                console.warn('IoT load error:', e);
+            }
+        }
+
+        loadIoTData();
+        setInterval(loadIoTData, 10000);  // Обновлять каждые 10 сек
+
         (function() {
             // ──────────────────────────────────────
             // THREE.JS SCENE SETUP
@@ -1119,11 +1153,14 @@
                 camera.position.z = Math.max(1.5, Math.min(5.5, camera.position.z));
             }, { passive: false });
 
-            window.flyTo = (lat, lon) => {
-                targetRotX = -lat * Math.PI / 180;
-                targetRotY = lon * Math.PI / 180;
+            window.flyToCoord = (lat, lon) => {
+                targetRotX = -(lat * Math.PI / 180);
+                targetRotY = lon * Math.PI / 180;  // ← БЕЗ МИНУСА!
                 camera.position.z = 2.2;
+                console.log(`🎯 Flying to: lat=${lat}, lon=${lon}`);
             };
+
+            window.flyTo = window.flyToCoord;
 
             // ──────────────────────────────────────
             // MODE TOGGLES
@@ -1230,7 +1267,7 @@
                     createMarker(lat, lon, data.predicted_magnitude,
                         `Predicted: ${region ? region.name : 'Ocean'}`, new Date().toISOString(), depth, region
                         ?.name || '');
-                    flyTo(lat, lon);
+                    window.flyToCoord(lat, lon);
                 } catch (err) {
                     document.getElementById('resMagRange').textContent = 'API unavailable';
                     document.getElementById('resConf').textContent = 'N/A';
@@ -1243,7 +1280,7 @@
                     createMarker(lat, lon, estimatedMag,
                         `Estimated: ${region ? region.name : 'Ocean'} (offline)`, new Date().toISOString(), depth,
                         region?.name || '');
-                    flyTo(lat, lon);
+                    window.flyToCoord(lat, lon);
                 }
             };
 
@@ -1269,9 +1306,6 @@
             loadEarthquakes();
             setInterval(loadEarthquakes, 45000);
             animate();
-
-            window.flyTo = flyTo;
-            window.predict = predict;
         })();
     </script>
 </body>

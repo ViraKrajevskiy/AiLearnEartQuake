@@ -83,6 +83,8 @@ class VibrationAPIView(APIView):
                 {'error': f'Prediction error: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+def stats_page(request):
+    return render(request, 'statistics.html')
 
 
 def index(request):
