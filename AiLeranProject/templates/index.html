@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 EarthquakeAI — Prediction & Education</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #000010;
+            --panel-bg: rgba(10, 10, 30, 0.92);
+            --text: #c8cce0;
+            --text-secondary: #99a0c0;
+            --border: rgba(255, 255, 255, 0.12);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --input-bg: rgba(255, 255, 255, 0.06);
+            --input-border: rgba(255, 255, 255, 0.18);
+            --btn-bg: linear-gradient(135deg, #667eea, #b840c8);
+            --header-gradient: linear-gradient(135deg, #667eea, #f093fb);
+            --panel-header-gradient: linear-gradient(135deg, #a0b8ff, #f0a0ff);
+            --tooltip-bg: rgba(10, 14, 26, 0.96);
+            --tooltip-text: #d0d4f0;
+            --tooltip-loc-gradient: linear-gradient(135deg, #ffc107, #f093fb);
+            --info-box-bg: rgba(102, 126, 234, 0.08);
+            --example-bg: rgba(255, 152, 0, 0.1);
+            --table-stripe: rgba(255, 255, 255, 0.03);
+            --scrollbar-thumb: rgba(102, 126, 234, 0.4);
+            --scrollbar-track: rgba(255, 255, 255, 0.04);
+        }
+        body.light-mode {
+            --bg: #c8d8f0;
+            --panel-bg: rgba(255, 255, 255, 0.9);
+            --text: #1a1a2e;
+            --text-secondary: #333350;
+            --border: rgba(0, 0, 0, 0.12);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.03);
+            --input-border: rgba(0, 0, 0, 0.2);
+            --btn-bg: linear-gradient(135deg, #4a5ac0, #9c3ab0);
+            --header-gradient: linear-gradient(135deg, #2a3a80, #b030b0);
+            --panel-header-gradient: linear-gradient(135deg, #2a3a80, #b030b0);
+            --tooltip-bg: rgba(255, 255, 255, 0.96);
+            --tooltip-text: #1a1a2e;
+            --tooltip-loc-gradient: linear-gradient(135deg, #c07000, #b030b0);
+            --info-box-bg: rgba(102, 126, 234, 0.06);
+            --example-bg: rgba(255, 152, 0, 0.08);
+            --table-stripe: rgba(0, 0, 0, 0.02);
+            --scrollbar-thumb: rgba(102, 126, 234, 0.35);
+            --scrollbar-track: rgba(0, 0, 0, 0.04);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            overflow: hidden;
+            user-select: none;
+            transition: background 0.5s;
+        }
+        #canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .header {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            padding: 16px 22px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 100;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .header h1 {
+            font-size: 1.45em;
+            font-weight: 800;
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+        .header .badge {
+            font-size: 0.7em;
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .theme-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.1em;
+            padding: 7px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            background: var(--panel-bg);
+        }
+        .theme-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .sidebar {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 340px;
+            max-height: 94vh;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: auto;
+            z-index: 100;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 10px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 10px;
+        }
+        .panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            padding: 16px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border-color 0.3s;
+            flex-shrink: 0;
+        }
+        .panel h3 {
+            font-size: 0.95em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: var(--panel-header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .panel h4 {
+            font-size: 0.8em;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+        .form-row {
+            margin-bottom: 7px;
+        }
+        .form-row label {
+            display: block;
+            font-size: 0.72em;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+        }
+        .form-row input {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.84em;
+            transition: 0.3s;
+        }
+        .form-row input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
+        }
+        .form-row small {
+            font-size: 0.68em;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 2px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            font-size: 0.9em;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(140, 80, 220, 0.5);
+        }
+        .result-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-top: 10px;
+            display: none;
+            font-size: 0.78em;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .result-box.show {
+            display: block;
+        }
+        .scale-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 6px;
+            font-size: 0.72em;
+            color: var(--text);
+        }
+        .scale-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            flex-shrink: 0;
+        }
+        .eq-list {
+            max-height: 180px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        }
+        .eq-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .eq-list::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 8px;
+        }
+        .eq-list::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 8px;
+        }
+        .eq-item {
+            padding: 7px 9px;
+            border-radius: 6px;
+            margin-bottom: 3px;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: 0.2s;
+        }
+        .eq-item:hover {
+            background: rgba(102, 126, 234, 0.15);
+            transform: translateX(3px);
+        }
+        .eq-item .loc {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .eq-item .info {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        .tooltip {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+            background: var(--tooltip-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--tooltip-text);
+            font-size: 0.8em;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: var(--shadow);
+            min-width: 200px;
+        }
+        .tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tooltip .tt-loc {
+            font-weight: 800;
+            font-size: 1em;
+            background: var(--tooltip-loc-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .tooltip .tt-region {
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .tooltip .tt-mag {
+            font-weight: 800;
+            font-size: 1.15em;
+            color: var(--text);
+        }
+        .bottom-info {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            padding: 7px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.72em;
+            color: var(--text-secondary);
+            pointer-events: auto;
+            z-index: 100;
+        }
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 7px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.82em;
+            transition: 0.3s;
+        }
+        .mode-btn.active {
+            background: rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+            font-weight: 600;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.78em;
+            transition: 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            background: rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+            font-weight: 700;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .info-box-sm {
+            background: var(--info-box-bg);
+            border-left: 3px solid #667eea;
+            padding: 8px 10px;
+            margin: 6px 0;
+            border-radius: 4px;
+            font-size: 0.73em;
+            color: var(--text);
+            line-height: 1.45;
+        }
+        .example-sm {
+            background: var(--example-bg);
+            border-left: 3px solid #ff9800;
+            padding: 7px 10px;
+            margin: 6px 0;
+            font-size: 0.72em;
+            color: var(--text);
+            line-height: 1.45;
+            border-radius: 4px;
+        }
+        .range-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 6px 8px;
+            background: var(--table-stripe);
+            border-radius: 4px;
+            font-size: 0.7em;
+            color: var(--text);
+        }
+        table.mini {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6px 0;
+            font-size: 0.7em;
+            color: var(--text);
+        }
+        table.mini th,
+        table.mini td {
+            padding: 5px 7px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        table.mini th {
+            background: var(--table-stripe);
+            font-weight: 600;
+        }
+        .checkmark {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .crossmark {
+            color: #F44336;
+            font-weight: bold;
+        }
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+            .header h1 {
+                font-size: 1.1em;
+            }
+            .header .badge {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="tooltip" id="tooltip">
+        <div class="tt-loc" id="ttLoc"></div>
+        <div class="tt-region" id="ttRegion"></div>
+        <div class="tt-mag" id="ttMag"></div>
+        <div id="ttDetail" style="margin-top:4px;"></div>
+    </div>
+    <div class="overlay">
+        <div class="header">
+            <h1>🌍 EarthquakeAI</h1>
+            <span class="badge">Predict &amp; Learn</span>
+            <button class="theme-btn" id="themeToggle" title="Toggle Day/Night"><i class="fas fa-sun"></i></button>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <!-- Display Mode -->
+            <div class="panel">
+                <h3><i class="fas fa-eye"></i> Display Mode</h3>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" id="modeCircles">🔵 Circles</button>
+                    <button class="mode-btn" id="modeFlags">🚩 Flags</button>
+                </div>
+            </div>
+
+            <!-- Main Panel with Tabs: Predict + Learn -->
+            <div class="panel">
+                <div class="tabs">
+                    <button class="tab-btn active" id="tabPredict">⚡ Predict</button>
+                    <button class="tab-btn" id="tabLearn">📚 Learn</button>
+                </div>
+
+                <!-- Predict Tab -->
+                <div class="tab-content active" id="contentPredict">
+                    <div class="form-row"><label>Latitude (широта) — between -90 and +90</label>
+                        <input type="number" id="lat" value="41.3" step="0.01" min="-90" max="90"><small>Ташкент=41.3 |
+                            Москва=55.75 | LA=34.05 | Tokyo=35.6 | Sydney=-33.87</small></div>
+                    <div class="form-row"><label>Longitude (долгота) — between -180 and +180</label>
+                        <input type="number" id="lon" value="69.2" step="0.01" min="-180" max="180"><small>Ташкент=69.2 |
+                            Москва=37.6 | LA=-118.2 | Tokyo=139.7 | Sydney=151.21</small></div>
+                    <div class="form-row"><label>Depth (глубина, km) — between 0 and 700</label>
+                        <input type="number" id="depth" value="15" step="1" min="0" max="700"><small>Shallow=0-30 |
+                            Medium=30-100 | Deep=100+</small></div>
+                    <button class="btn" onclick="predict()"><i class="fas fa-circle-check"></i> Predict Now</button>
+                    <div class="result-box" id="resultBox">
+                        <div><span>📍 Place:</span> <strong id="resPlace">-</strong></div>
+                        <div><span>📏 Depth type:</span> <strong id="resDepthType">-</strong></div>
+                        <div><span>⚠️ Risk:</span> <strong id="resRisk">-</strong></div>
+                        <div><span>📊 Mag range:</span> <strong id="resMagRange">-</strong></div>
+                        <div><span>🎯 Confidence:</span> <strong id="resConf">0%</strong></div>
+                        <div><span>🎯 Location uncert.:</span> <strong id="resUncert">-</strong></div>
+                        <div><span>📡 Nearby (7d):</span> <strong id="resNearby">-</strong></div>
+                    </div>
+                </div>
+
+                <!-- Learn Tab -->
+                <div class="tab-content" id="contentLearn">
+                    <h4>🧭 Latitude (широта)</h4>
+                    <div class="info-box-sm"><strong>North-south coordinate</strong> — measured from the equator</div>
+                    <div class="range-row"><span>🔴 -90° (South Pole)</span><span>🔵 0° (Equator)</span><span>🟢 +90°
+                            (North Pole)</span></div>
+                    <div class="example-sm">🟡 Tashkent: 41.3°N &nbsp;|&nbsp; 🔴 Moscow: 55.75°N<br>🔵 LA: 34.05°N
+                        &nbsp;|&nbsp; 🟢 Tokyo: 35.6°N<br>🟠 Sydney: -33.87°S</div>
+
+                    <h4>🧭 Longitude (долгота)</h4>
+                    <div class="info-box-sm"><strong>East-west coordinate</strong> — from the prime meridian (Greenwich)
+                    </div>
+                    <div class="range-row"><span>🔴 -180° (West)</span><span>🔵 0° (Greenwich)</span><span>🟢 +180°
+                            (East)</span></div>
+                    <div class="example-sm">🟡 Tashkent: 69.2°E &nbsp;|&nbsp; 🔴 Moscow: 37.6°E<br>🔵 LA: -118.2°W ⚠️
+                        &nbsp;|&nbsp; 🟢 Tokyo: 139.7°E<br>🟠 Sydney: 151.21°E</div>
+
+                    <h4>📏 Depth (глубина)</h4>
+                    <div class="info-box-sm"><strong>Hypocenter depth in km</strong> — shallower = more dangerous</div>
+                    <table class="mini">
+                        <tr><th>Depth</th><th>Danger</th><th>Damage</th></tr>
+                        <tr><td>0-30 km 🔴</td><td>MAXIMUM</td><td>Huge</td></tr>
+                        <tr><td>30-100 km 🟠</td><td>High</td><td>Moderate</td></tr>
+                        <tr><td>100+ km 🟢</td><td>Low</td><td>Minimal</td></tr>
+                    </table>
+
+                    <h4>⚠️ Common Mistakes</h4>
+                    <div class="example-sm">
+                        ❌ lat=120 → <span class="crossmark">ERROR!</span> (max 90)<br>
+                        ❌ lon=400 → <span class="crossmark">ERROR!</span> (max 180)<br>
+                        ❌ depth=-50 → <span class="crossmark">ERROR!</span> (can't be negative)<br>
+                        ❌ lat="41°30'" → <span class="crossmark">ERROR!</span> (use 41.5)
+                    </div>
+                    <div class="info-box-sm">
+                        ✅ lat=41.3 ← between -90 and +90 ✓<br>
+                        ✅ lon=69.2 ← between -180 and +180 ✓<br>
+                        ✅ depth=15 ← between 0 and 700 ✓<br>
+                        ✅ Precision: 2-3 decimal places (0.01°) ✓
+                    </div>
+                </div>
+            </div>
+
+            <!-- Magnitude Scale -->
+            <div class="panel">
+                <h3><i class="fas fa-ruler"></i> Magnitude Scale</h3>
+                <div class="scale-row">
+                    <div class="scale-dot" style="background:#4CAF50;"></div> 1-3 Micro
+                </div>
+                <div class="scale-row">
+                    <div class="scale-dot" style="background:#8BC34A;"></div> 3-4 Minor
+                </div>
+                <div class="scale-row">
+                    <div class="scale-dot" style="background:#FFC107;"></div> 4-5 Moderate
+                </div>
+                <div class="scale-row">
+                    <div class="scale-dot" style="background:#FF9800;"></div> 5-6 Strong
+                </div>
+                <div class="scale-row">
+                    <div class="scale-dot" style="background:#F44336;"></div> 6+ Major
+                </div>
+            </div>
+
+            <!-- Recent Earthquakes -->
+            <div class="panel">
+                <h3><i class="fas fa-list"></i> Recent Earthquakes</h3>
+                <div class="eq-list" id="eqList">Loading...</div>
+            </div>
+        </div>
+        <div class="bottom-info">
+            <i class="fas fa-mouse"></i> Drag to rotate · Scroll to zoom · Hover markers for details · Click list to fly
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+    </script>
+    <script>
+        (function() {
+            // ──────────────────────────────────────
+            // THREE.JS SCENE SETUP
+            // ──────────────────────────────────────
+            const canvas = document.getElementById('canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000010);
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0.4, 3.2);
+            camera.lookAt(0, 0, 0);
+            const ambientLight = new THREE.AmbientLight(0x334466, 0.7);
+            const sunLight = new THREE.DirectionalLight(0xffffff, 1.3);
+            sunLight.position.set(5, 3, 5);
+            scene.add(ambientLight, sunLight);
+
+            // Stars
+            const starsGeo = new THREE.BufferGeometry();
+            const starsCount = 2000;
+            const starsPos = new Float32Array(starsCount * 3);
+            for (let i = 0; i < starsCount; i++) {
+                const r = 15 + Math.random() * 20;
+                const th = Math.acos(2 * Math.random() - 1);
+                const ph = Math.random() * Math.PI * 2;
+                starsPos[i * 3] = r * Math.sin(th) * Math.cos(ph);
+                starsPos[i * 3 + 1] = r * Math.sin(th) * Math.sin(ph);
+                starsPos[i * 3 + 2] = r * Math.cos(th);
+            }
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
+            const stars = new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.15,
+                blending: THREE.AdditiveBlending, depthWrite: false }));
+            scene.add(stars);
+
+            const earthGroup = new THREE.Group();
+            scene.add(earthGroup);
+            const earthGeo = new THREE.SphereGeometry(1, 128, 128);
+            const textureLoader = new THREE.TextureLoader();
+
+            // Load textures: color map and normal map for realistic terrain (mountains, ridges)
+            const earthTexture = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+            const earthNormalMap = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: earthTexture,
+                normalMap: earthNormalMap,
+                normalScale: new THREE.Vector2(0.9, 0.9), // Amplify relief for visible mountains
+                roughness: 0.7,
+                metalness: 0.05
+            });
+            const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            earthGroup.add(earthMesh);
+
+            // Regions for border lines and region detection
+            const regions = [
+                { name: 'North America', polygon: [
+                        [-130, 50],
+                        [-125, 55],
+                        [-100, 60],
+                        [-70, 55],
+                        [-60, 50],
+                        [-55, 45],
+                        [-65, 40],
+                        [-75, 35],
+                        [-85, 30],
+                        [-100, 28],
+                        [-110, 32],
+                        [-120, 35],
+                        [-125, 42],
+                        [-130, 50]
+                    ] },
+                { name: 'Central America', polygon: [
+                        [-100, 28],
+                        [-85, 30],
+                        [-80, 25],
+                        [-82, 18],
+                        [-90, 15],
+                        [-100, 18],
+                        [-105, 22],
+                        [-100, 28]
+                    ] },
+                { name: 'South America', polygon: [
+                        [-80, 10],
+                        [-70, 12],
+                        [-55, 5],
+                        [-40, -5],
+                        [-35, -10],
+                        [-50, -20],
+                        [-58, -30],
+                        [-65, -35],
+                        [-70, -30],
+                        [-75, -22],
+                        [-80, -10],
+                        [-80, 10]
+                    ] },
+                { name: 'Europe', polygon: [
+                        [-10, 55],
+                        [5, 55],
+                        [15, 52],
+                        [25, 48],
+                        [30, 45],
+                        [35, 42],
+                        [25, 38],
+                        [10, 40],
+                        [-5, 42],
+                        [-10, 48],
+                        [-10, 55]
+                    ] },
+                { name: 'Russia', polygon: [
+                        [30, 55],
+                        [60, 60],
+                        [100, 65],
+                        [140, 60],
+                        [170, 55],
+                        [180, 50],
+                        [160, 45],
+                        [120, 45],
+                        [80, 48],
+                        [40, 50],
+                        [30, 55]
+                    ] },
+                { name: 'East Asia', polygon: [
+                        [100, 45],
+                        [120, 45],
+                        [130, 40],
+                        [140, 38],
+                        [145, 42],
+                        [140, 48],
+                        [120, 50],
+                        [100, 48],
+                        [95, 42],
+                        [100, 38],
+                        [100, 45]
+                    ] },
+                { name: 'Southeast Asia', polygon: [
+                        [95, 20],
+                        [105, 20],
+                        [115, 15],
+                        [125, 10],
+                        [130, 5],
+                        [120, -5],
+                        [110, -5],
+                        [100, 0],
+                        [95, 10],
+                        [95, 20]
+                    ] },
+                { name: 'South Asia', polygon: [
+                        [68, 32],
+                        [75, 30],
+                        [85, 28],
+                        [90, 25],
+                        [88, 20],
+                        [80, 15],
+                        [72, 18],
+                        [68, 24],
+                        [68, 32]
+                    ] },
+                { name: 'Middle East', polygon: [
+                        [35, 40],
+                        [45, 38],
+                        [55, 35],
+                        [60, 28],
+                        [55, 22],
+                        [45, 20],
+                        [35, 25],
+                        [30, 30],
+                        [32, 36],
+                        [35, 40]
+                    ] },
+                { name: 'North Africa', polygon: [
+                        [-15, 32],
+                        [5, 34],
+                        [15, 30],
+                        [30, 28],
+                        [35, 25],
+                        [30, 20],
+                        [10, 18],
+                        [-5, 20],
+                        [-15, 25],
+                        [-15, 32]
+                    ] },
+                { name: 'Sub-Saharan Africa', polygon: [
+                        [-10, 15],
+                        [10, 15],
+                        [25, 10],
+                        [35, 5],
+                        [40, -5],
+                        [35, -15],
+                        [25, -25],
+                        [15, -20],
+                        [5, -5],
+                        [-10, 5],
+                        [-10, 15]
+                    ] },
+                { name: 'Australia', polygon: [
+                        [115, -15],
+                        [135, -15],
+                        [150, -20],
+                        [155, -28],
+                        [145, -35],
+                        [135, -33],
+                        [120, -28],
+                        [113, -22],
+                        [115, -15]
+                    ] },
+                { name: 'Central Asia', polygon: [
+                        [50, 45],
+                        [65, 48],
+                        [80, 48],
+                        [85, 42],
+                        [75, 38],
+                        [60, 40],
+                        [50, 42],
+                        [50, 45]
+                    ] },
+            ];
+
+            function latLonToVec3(lat, lon, radius) {
+                const phi = (90 - lat) * Math.PI / 180;
+                const theta = (lon + 180) * Math.PI / 180;
+                return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius *
+                    Math.sin(phi) * Math.sin(theta));
+            }
+
+            function interpolateGreatCircle(p1, p2, numPoints = 20) {
+                const points = [];
+                const v1 = p1.clone().normalize();
+                const v2 = p2.clone().normalize();
+                const omega = Math.acos(Math.min(1, Math.max(-1, v1.dot(v2))));
+                if (omega < 0.001) {
+                    for (let i = 0; i <= numPoints; i++) points.push(v1.clone().multiplyScalar(1.005));
+                } else {
+                    const sinOmega = Math.sin(omega);
+                    for (let i = 0; i <= numPoints; i++) {
+                        const t = i / numPoints;
+                        const a = Math.sin((1 - t) * omega) / sinOmega;
+                        const b = Math.sin(t * omega) / sinOmega;
+                        points.push(v1.clone().multiplyScalar(a).add(v2.clone().multiplyScalar(b)).normalize()
+                            .multiplyScalar(1.005));
+                    }
+                }
+                return points;
+            }
+
+            const borderLines = [];
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+            regions.forEach(region => {
+                const poly = region.polygon;
+                const pts3D = poly.map(p => latLonToVec3(p[1], p[0], 1.005));
+                pts3D.push(pts3D[0].clone());
+                const allPoints = [];
+                for (let i = 0; i < pts3D.length - 1; i++) {
+                    const seg = interpolateGreatCircle(pts3D[i], pts3D[i + 1], 30);
+                    if (i > 0) seg.shift();
+                    allPoints.push(...seg);
+                }
+                const geo = new THREE.BufferGeometry().setFromPoints(allPoints);
+                const line = new THREE.Line(geo, lineMaterial.clone());
+                earthGroup.add(line);
+                borderLines.push(line);
+            });
+
+            // ──────────────────────────────────────
+            // MARKERS
+            // ──────────────────────────────────────
+            const markersGroup = new THREE.Group();
+            earthGroup.add(markersGroup);
+            const markers = [];
+            let markerMode = 'circles';
+
+            function getMagColor(mag) {
+                if (mag < 3) return 0x4CAF50;
+                if (mag < 4) return 0x8BC34A;
+                if (mag < 5) return 0xFFC107;
+                if (mag < 6) return 0xFF9800;
+                return 0xF44336;
+            }
+
+            function createMarker(lat, lon, magnitude, location, timestamp, depth, regionName) {
+                const pos = latLonToVec3(lat, lon, 1.02);
+                const color = getMagColor(magnitude);
+                if (markerMode === 'circles') {
+                    const size = 0.02 + magnitude * 0.008;
+                    const geo = new THREE.SphereGeometry(size, 16, 16);
+                    const mat = new THREE.MeshBasicMaterial({ color });
+                    const sphere = new THREE.Mesh(geo, mat);
+                    sphere.position.copy(pos);
+                    sphere.userData = { lat, lon, magnitude, location, timestamp, depth, region: regionName };
+                    markersGroup.add(sphere);
+                    markers.push(sphere);
+                    return sphere;
+                } else {
+                    const group = new THREE.Group();
+                    group.position.copy(pos);
+                    const normal = pos.clone().normalize();
+                    group.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+                    const poleGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.25, 6);
+                    const pole = new THREE.Mesh(poleGeo, new THREE.MeshBasicMaterial({ color: 0xcccccc }));
+                    pole.position.set(0, 0.125, 0);
+                    group.add(pole);
+                    const shape = new THREE.Shape();
+                    shape.moveTo(0, 0);
+                    shape.lineTo(0.08, 0.06);
+                    shape.lineTo(0, 0.12);
+                    shape.lineTo(0, 0);
+                    const flagGeo = new THREE.ShapeGeometry(shape);
+                    const flag = new THREE.Mesh(flagGeo, new THREE.MeshBasicMaterial({ color, side: THREE
+                            .DoubleSide }));
+                    flag.position.set(0, 0.25, 0);
+                    flag.rotation.z = -Math.PI / 2;
+                    group.add(flag);
+                    const collider = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), new THREE
+                        .MeshBasicMaterial({ visible: false }));
+                    collider.position.set(0, 0.35, 0);
+                    collider.userData.markerGroup = group;
+                    group.add(collider);
+                    group.userData = { lat, lon, magnitude, location, timestamp, depth, region: regionName };
+                    markersGroup.add(group);
+                    markers.push(group);
+                    return group;
+                }
+            }
+
+            function clearMarkers() {
+                while (markersGroup.children.length) {
+                    const c = markersGroup.children[0];
+                    c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+                    markersGroup.remove(c);
+                }
+                markers.length = 0;
+            }
+
+            function findRegion(lon, lat) {
+                return regions.find(r => {
+                    const poly = r.polygon;
+                    let inside = false;
+                    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+                        const xi = poly[i][0],
+                            yi = poly[i][1];
+                        const xj = poly[j][0],
+                            yj = poly[j][1];
+                        if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)
+                            inside = !inside;
+                    }
+                    return inside;
+                }) || null;
+            }
+
+            let uncertaintyCircle = null;
+
+            function createUncertaintyCircle(lat, lon, radiusDeg) {
+                if (uncertaintyCircle) earthGroup.remove(uncertaintyCircle);
+                const points = [];
+                const steps = 64;
+                const earthRadius = 1.025;
+                for (let i = 0; i <= steps; i++) {
+                    const angle = (i / steps) * Math.PI * 2;
+                    const dLat = radiusDeg * Math.cos(angle);
+                    const dLon = radiusDeg * Math.sin(angle) / Math.cos(lat * Math.PI / 180);
+                    points.push(latLonToVec3(lat + dLat, lon + dLon, earthRadius));
+                }
+                const geo = new THREE.BufferGeometry().setFromPoints(points);
+                const mat = new THREE.LineBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.7 });
+                uncertaintyCircle = new THREE.LineLoop(geo, mat);
+                earthGroup.add(uncertaintyCircle);
+            }
+
+            // ──────────────────────────────────────
+            // PLACE NAME DETECTION
+            // ──────────────────────────────────────
+            function getPlaceName(lat, lon) {
+                const places = [
+                    { lat: 41.3, lon: 69.2, name: '🟡 Tashkent, Uzbekistan' },
+                    { lat: 55.75, lon: 37.6, name: '🔴 Moscow, Russia' },
+                    { lat: 34.05, lon: -118.2, name: '🔵 Los Angeles, USA' },
+                    { lat: 35.6, lon: 139.7, name: '🟢 Tokyo, Japan' },
+                    { lat: -33.87, lon: 151.21, name: '🟠 Sydney, Australia' },
+                    { lat: 37.5, lon: 141.5, name: '🗾 Fukushima, Japan' },
+                    { lat: -33.5, lon: -72.0, name: '🌋 Valparaíso, Chile' },
+                    { lat: 52.0, lon: -169.0, name: '🌊 Aleutian Islands, Alaska' },
+                ];
+                for (let p of places) {
+                    if (Math.abs(lat - p.lat) < 0.5 && Math.abs(lon - p.lon) < 0.5) return p.name;
+                }
+                const region = findRegion(lon, lat);
+                if (region) return '📍 ' + region.name;
+                return '🌐 Ocean / Unknown';
+            }
+
+            function getDepthType(depth) {
+                if (depth < 30) return '🔴 SHALLOW (0-30 km) — MAX DANGER';
+                if (depth < 100) return '🟠 MEDIUM (30-100 km) — HIGH DANGER';
+                return '🟢 DEEP (100+ km) — LOW DANGER';
+            }
+
+            function getRiskLevel(depth) {
+                if (depth < 30) return '⚠️⚠️⚠️ MAXIMUM — very dangerous!';
+                if (depth < 70) return '⚠️⚠️ HIGH — dangerous';
+                return '⚠️ LOW — rarely felt';
+            }
+
+            // ──────────────────────────────────────
+            // DATA LOADING
+            // ──────────────────────────────────────
+            async function loadEarthquakes() {
+                try {
+                    const resp = await fetch('/api/earthquakes/');
+                    const data = await resp.json();
+                    const eqs = Array.isArray(data) ? data : (data.results || []);
+                    processData(eqs);
+                } catch (e) {
+                    console.warn('Using demo data');
+                    generateDemo();
+                }
+            }
+
+            function processData(eqs) {
+                clearMarkers();
+                eqs.slice(0, 250).forEach(eq => {
+                    const region = findRegion(eq.longitude, eq.latitude);
+                    createMarker(eq.latitude, eq.longitude, eq.magnitude, eq.location || 'Unknown', eq.timestamp, eq
+                        .depth, region?.name || '');
+                });
+                updateList(eqs);
+            }
+
+            function generateDemo() {
+                const demo = [
+                    { lat: 41.3, lon: 69.2, mag: 4.2, loc: '10 km NE of Tashkent, Uzbekistan', ts: new Date()
+                            .toISOString(), depth: 15 },
+                    { lat: 37.5, lon: 141.5, mag: 6.1, loc: 'Fukushima, Japan', ts: new Date(Date.now() - 3600000)
+                            .toISOString(), depth: 45 },
+                    { lat: 34.0, lon: -118.0, mag: 3.5, loc: 'Los Angeles, USA', ts: new Date(Date.now() - 7200000)
+                            .toISOString(), depth: 8 },
+                    { lat: -33.5, lon: -72.0, mag: 7.2, loc: 'Valparaíso, Chile', ts: new Date(Date.now() - 10800000)
+                            .toISOString(), depth: 35 },
+                    { lat: 52.0, lon: -169.0, mag: 8.0, loc: 'Aleutian Islands, Alaska', ts: new Date(Date.now() -
+                            21600000).toISOString(), depth: 40 },
+                    { lat: 55.75, lon: 37.6, mag: 2.1, loc: 'Near Moscow, Russia', ts: new Date(Date.now() - 43200000)
+                            .toISOString(), depth: 5 },
+                    { lat: 35.6, lon: 139.7, mag: 5.0, loc: 'Tokyo Bay, Japan', ts: new Date(Date.now() - 86400000)
+                            .toISOString(), depth: 55 },
+                    { lat: -33.87, lon: 151.21, mag: 3.8, loc: 'Sydney Basin, Australia', ts: new Date(Date.now() -
+                            172800000).toISOString(), depth: 10 },
+                ];
+                processData(demo);
+            }
+
+            function updateList(eqs) {
+                const list = document.getElementById('eqList');
+                list.innerHTML = eqs.slice(0, 8).map(eq => `
+                    <div class="eq-item" onclick="flyTo(${eq.latitude},${eq.longitude})">
+                        <div class="loc">📍 ${eq.location || 'Unknown'}</div>
+                        <div class="info">M${eq.magnitude.toFixed(1)} · ${new Date(eq.timestamp).toLocaleDateString()} · ${eq.depth ? eq.depth.toFixed(0)+'km' : 'N/A'}</div>
+                    </div>
+                `).join('') || 'No data';
+            }
+
+            // ──────────────────────────────────────
+            // INTERACTION
+            // ──────────────────────────────────────
+            let isDragging = false,
+                prevMouse = { x: 0, y: 0 },
+                targetRotX = 0,
+                targetRotY = 0;
+            const raycaster = new THREE.Raycaster(),
+                mouse = new THREE.Vector2();
+            const tooltip = document.getElementById('tooltip');
+            let hoveredMarker = null;
+
+            canvas.addEventListener('mousedown', e => { isDragging = true;
+                prevMouse.x = e.clientX;
+                prevMouse.y = e.clientY; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', e => {
+                if (isDragging) {
+                    targetRotY += (e.clientX - prevMouse.x) * 0.005;
+                    targetRotX += (e.clientY - prevMouse.y) * 0.005;
+                    targetRotX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, targetRotX));
+                    prevMouse.x = e.clientX;
+                    prevMouse.y = e.clientY;
+                }
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const testObjects = markers.flatMap(m => markerMode === 'circles' ? [m] : m.children.filter(c => c
+                    .userData.markerGroup));
+                const intersects = raycaster.intersectObjects(testObjects);
+                if (intersects.length) {
+                    const obj = intersects[0].object;
+                    const data = markerMode === 'circles' ? obj.userData : obj.userData.markerGroup.userData;
+                    if (hoveredMarker !== data) {
+                        hoveredMarker = data;
+                        document.getElementById('ttLoc').textContent = data.location;
+                        document.getElementById('ttRegion').textContent = data.region || 'Region unknown';
+                        document.getElementById('ttMag').textContent = `M ${data.magnitude.toFixed(1)}`;
+                        const d = new Date(data.timestamp);
+                        document.getElementById('ttDetail').innerHTML =
+                            `Depth: ${data.depth ? data.depth.toFixed(0)+' km' : 'N/A'}<br>
+                             Date: ${d.toLocaleDateString()}<br>
+                             Time: ${d.toLocaleTimeString()}<br>
+                             Lat: ${data.lat.toFixed(2)}° Lon: ${data.lon.toFixed(2)}°`;
+                        tooltip.classList.add('visible');
+                        let tx = e.clientX + 20,
+                            ty = e.clientY - 80;
+                        if (tx + 220 > window.innerWidth) tx = e.clientX - 240;
+                        if (ty < 10) ty = e.clientY + 20;
+                        tooltip.style.left = tx + 'px';
+                        tooltip.style.top = ty + 'px';
+                    }
+                } else {
+                    hoveredMarker = null;
+                    tooltip.classList.remove('visible');
+                }
+            });
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.002;
+                camera.position.z = Math.max(1.5, Math.min(5.5, camera.position.z));
+            }, { passive: false });
+
+            window.flyTo = (lat, lon) => {
+                targetRotX = -lat * Math.PI / 180;
+                targetRotY = lon * Math.PI / 180;
+                camera.position.z = 2.2;
+            };
+
+            // ──────────────────────────────────────
+            // MODE TOGGLES
+            // ──────────────────────────────────────
+            document.getElementById('modeCircles').onclick = () => {
+                if (markerMode === 'circles') return;
+                markerMode = 'circles';
+                document.getElementById('modeCircles').classList.add('active');
+                document.getElementById('modeFlags').classList.remove('active');
+                const eqs = markers.map(m => m.userData);
+                clearMarkers();
+                eqs.forEach(d => createMarker(d.lat, d.lon, d.magnitude, d.location, d.timestamp, d.depth, d
+                    .region));
+            };
+            document.getElementById('modeFlags').onclick = () => {
+                if (markerMode === 'flags') return;
+                markerMode = 'flags';
+                document.getElementById('modeFlags').classList.add('active');
+                document.getElementById('modeCircles').classList.remove('active');
+                const eqs = markers.map(m => m.userData);
+                clearMarkers();
+                eqs.forEach(d => createMarker(d.lat, d.lon, d.magnitude, d.location, d.timestamp, d.depth, d
+                    .region));
+            };
+
+            // ──────────────────────────────────────
+            // TAB TOGGLES (Predict / Learn)
+            // ──────────────────────────────────────
+            document.getElementById('tabPredict').onclick = () => {
+                document.getElementById('tabPredict').classList.add('active');
+                document.getElementById('tabLearn').classList.remove('active');
+                document.getElementById('contentPredict').classList.add('active');
+                document.getElementById('contentLearn').classList.remove('active');
+            };
+            document.getElementById('tabLearn').onclick = () => {
+                document.getElementById('tabLearn').classList.add('active');
+                document.getElementById('tabPredict').classList.remove('active');
+                document.getElementById('contentLearn').classList.add('active');
+                document.getElementById('contentPredict').classList.remove('active');
+            };
+
+            // ──────────────────────────────────────
+            // THEME TOGGLE
+            // ──────────────────────────────────────
+            let isNight = true;
+            document.getElementById('themeToggle').onclick = () => {
+                isNight = !isNight;
+                document.body.classList.toggle('light-mode', !isNight);
+                renderer.setClearColor(isNight ? 0x000010 : 0x87CEEB);
+                ambientLight.intensity = isNight ? 0.7 : 1.2;
+                sunLight.intensity = isNight ? 1.3 : 1.8;
+                stars.visible = isNight;
+                borderLines.forEach(l => l.material.color.set(isNight ? 0xffffff : 0x222222));
+            };
+
+            // ──────────────────────────────────────
+            // PREDICT FUNCTION (merged validation + API)
+            // ──────────────────────────────────────
+            window.predict = async function() {
+                const lat = parseFloat(document.getElementById('lat').value);
+                const lon = parseFloat(document.getElementById('lon').value);
+                const depth = parseFloat(document.getElementById('depth').value);
+
+                // ── VALIDATION ──
+                if (isNaN(lat) || lat < -90 || lat > 90) {
+                    alert('❌ Latitude must be between -90 and +90');
+                    return;
+                }
+                if (isNaN(lon) || lon < -180 || lon > 180) {
+                    alert('❌ Longitude must be between -180 and +180');
+                    return;
+                }
+                if (isNaN(depth) || depth < 0 || depth > 700) {
+                    alert('❌ Depth must be between 0 and 700 km');
+                    return;
+                }
+
+                // Local info
+                const place = getPlaceName(lat, lon);
+                const depthType = getDepthType(depth);
+                const risk = getRiskLevel(depth);
+
+                document.getElementById('resPlace').textContent = place + ` (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`;
+                document.getElementById('resDepthType').textContent = depthType;
+                document.getElementById('resRisk').textContent = risk;
+                document.getElementById('resultBox').classList.add('show');
+
+                // ── API CALL ──
+                try {
+                    const resp = await fetch('/api/vibration/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ latitude: lat, longitude: lon, depth: depth })
+                    });
+                    if (!resp.ok) throw new Error('Prediction failed');
+                    const data = await resp.json();
+                    document.getElementById('resMagRange').textContent =
+                        `M ${data.lower_magnitude.toFixed(1)} – ${data.upper_magnitude.toFixed(1)}`;
+                    document.getElementById('resConf').textContent = (data.confidence * 100).toFixed(1) + '%';
+                    document.getElementById('resUncert').textContent = `±${data.location_uncertainty.toFixed(2)}°`;
+                    document.getElementById('resNearby').textContent = data.nearby_quakes_count;
+                    createUncertaintyCircle(lat, lon, data.location_uncertainty);
+                    const region = findRegion(lon, lat);
+                    createMarker(lat, lon, data.predicted_magnitude,
+                        `Predicted: ${region ? region.name : 'Ocean'}`, new Date().toISOString(), depth, region
+                        ?.name || '');
+                    flyTo(lat, lon);
+                } catch (err) {
+                    document.getElementById('resMagRange').textContent = 'API unavailable';
+                    document.getElementById('resConf').textContent = 'N/A';
+                    document.getElementById('resUncert').textContent = 'N/A';
+                    document.getElementById('resNearby').textContent = 'N/A';
+                    console.warn('API error:', err.message);
+                    const region = findRegion(lon, lat);
+                    const estimatedMag = depth < 30 ? 4.5 + Math.random() * 2.5 : depth < 100 ? 3.5 + Math.random() *
+                        2 : 2 + Math.random() * 2;
+                    createMarker(lat, lon, estimatedMag,
+                        `Estimated: ${region ? region.name : 'Ocean'} (offline)`, new Date().toISOString(), depth,
+                        region?.name || '');
+                    flyTo(lat, lon);
+                }
+            };
+
+            // ──────────────────────────────────────
+            // ANIMATION LOOP
+            // ──────────────────────────────────────
+            function animate() {
+                requestAnimationFrame(animate);
+                earthGroup.rotation.x += (targetRotX - earthGroup.rotation.x) * 0.1;
+                earthGroup.rotation.y += (targetRotY - earthGroup.rotation.y) * 0.1;
+                stars.rotation.y += 0.0001;
+                renderer.render(scene, camera);
+            }
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // ──────────────────────────────────────
+            // INIT
+            // ──────────────────────────────────────
+            loadEarthquakes();
+            setInterval(loadEarthquakes, 45000);
+            animate();
+
+            window.flyTo = flyTo;
+            window.predict = predict;
+        })();
+    </script>
+</body>
+</html>
