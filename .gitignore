@@ -1,0 +1,20 @@
+# Настройки и ключи
+Config/settings.py
+local_settings.py
+.env
+
+# База данных
+db.sqlite3
+*.sqlite3
+
+# Виртуальное окружение
+venv/
+.venv/
+env/
+
+# Питон-кеш
+__pycache__/
+*.pyc
+
+# Модели (если они огромные и ты не хочешь их пушить)
+*.pkl
