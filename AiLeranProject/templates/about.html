@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>📖 EarthquakeAI — Technical Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #010112;
+            --panel-bg: rgba(15, 15, 40, 0.85);
+            --text: #eef0ff;
+            --text-secondary: #a0a5c0;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            --accent: #667eea;
+            --accent-alt: #f093fb;
+            --glass: rgba(18, 18, 40, 0.75);
+            --hover-light: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-mode {
+            --bg: #e8eef7;
+            --panel-bg: rgba(255, 255, 255, 0.9);
+            --text: #1a1c2e;
+            --text-secondary: #4a4e6b;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            --glass: rgba(255, 255, 255, 0.85);
+            --hover-light: rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.4s, color 0.4s;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 24px 30px;
+            background: var(--glass);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            margin-right: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.35);
+            white-space: nowrap;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            box-shadow: none;
+            color: var(--text);
+            backdrop-filter: blur(8px);
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .theme-btn, .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.2em;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .theme-btn:hover, .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: rgba(102, 126, 234, 0.25);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.3);
+        }
+        .tab-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: var(--glass);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+        .section:hover {
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 25px 60px rgba(102, 126, 234, 0.15);
+        }
+
+        .section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section h3 {
+            font-size: 1.3em;
+            margin: 20px 0 12px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section p, .section li {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin: 10px 0;
+        }
+
+        .section ul, .section ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* Таблицы с горизонтальной прокруткой на мобильных */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            min-width: 600px; /* гарантирует прокрутку на узких экранах */
+        }
+
+        table th {
+            background: rgba(102, 126, 234, 0.15);
+            padding: 14px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent);
+        }
+
+        table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        table tr:hover td {
+            background: var(--hover-light);
+        }
+
+        .formula-box {
+            background: rgba(102, 126, 234, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            word-break: break-word;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 0.85em;
+            margin: 15px 0;
+            color: #4CAF50;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .stat-card {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 15px 0;
+            display: inline-block;
+            min-width: 200px;
+            margin-right: 15px;
+            vertical-align: top;
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 1.8em;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+
+        .stat-card small {
+            color: var(--text-secondary);
+            font-size: 0.8em;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .feature-item:hover {
+            background: rgba(102, 126, 234, 0.12);
+            border-color: var(--accent);
+        }
+
+        .feature-item strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .feature-item small {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: rgba(255, 152, 0, 0.12);
+            border-left: 4px solid #FF9800;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 15px 0;
+            color: var(--text);
+        }
+
+        .success-box {
+            background: rgba(76, 175, 80, 0.12);
+            border-left: 4px solid #4CAF50;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 15px 0;
+            color: var(--text);
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+                margin-bottom: 10px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.85em;
+            }
+
+            .tabs {
+                gap: 6px;
+            }
+
+            .tab-btn {
+                padding: 8px 14px;
+                font-size: 0.85em;
+            }
+
+            .section {
+                padding: 20px 15px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .section h3 {
+                font-size: 1.1em;
+            }
+
+            .section p, .section li {
+                font-size: 0.9em;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                display: block;
+                margin-right: 0;
+                min-width: 0;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+                padding: 12px;
+            }
+
+            .formula-box {
+                font-size: 0.85em;
+            }
+
+            /* Убираем горизонтальные отступы у ul/ol */
+            .section ul, .section ol {
+                margin-left: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .tab-btn {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.8em;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="pageTitle">📖 EarthquakeAI Documentation</h1>
+            <div class="nav-buttons">
+                <a href="/" class="btn btn-secondary" id="mapBtn"><i class="fas fa-globe"></i> Map</a>
+                <a href="/statistics/" class="btn btn-secondary" id="statsBtn"><i class="fas fa-chart-bar"></i> Stats</a>
+                <button class="lang-btn" id="langToggle"><i class="fas fa-language"></i> <span id="langText">RU</span></button>
+                <button class="theme-btn" id="themeToggle" title="Toggle Theme"><i class="fas fa-sun"></i></button>
+            </div>
+        </div>
+
+        <div class="tabs" id="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')" id="tabOverview"><i class="fas fa-book"></i> Overview</button>
+            <button class="tab-btn" onclick="switchTab('datasets')" id="tabDatasets"><i class="fas fa-database"></i> Datasets</button>
+            <button class="tab-btn" onclick="switchTab('model')" id="tabModel"><i class="fas fa-brain"></i> Model</button>
+            <button class="tab-btn" onclick="switchTab('features')" id="tabFeatures"><i class="fas fa-sliders-h"></i> Features</button>
+            <button class="tab-btn" onclick="switchTab('formulas')" id="tabFormulas"><i class="fas fa-calculator"></i> Formulas</button>
+            <button class="tab-btn" onclick="switchTab('performance')" id="tabPerformance"><i class="fas fa-chart-line"></i> Performance</button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active"></div>
+        <!-- DATASETS TAB -->
+        <div id="datasets" class="tab-content"></div>
+        <!-- MODEL TAB -->
+        <div id="model" class="tab-content"></div>
+        <!-- FEATURES TAB -->
+        <div id="features" class="tab-content"></div>
+        <!-- FORMULAS TAB -->
+        <div id="formulas" class="tab-content"></div>
+        <!-- PERFORMANCE TAB -->
+        <div id="performance" class="tab-content"></div>
+    </div>
+
+    <script>
+        // ========== TRANSLATIONS ==========
+        const translations = {
+            en: {
+                pageTitle: '📖 EarthquakeAI Documentation',
+                mapBtn: 'Map',
+                statsBtn: 'Stats',
+                langSwitch: 'RU',
+                tabOverview: 'Overview',
+                tabDatasets: 'Datasets',
+                tabModel: 'Model',
+                tabFeatures: 'Features',
+                tabFormulas: 'Formulas',
+                tabPerformance: 'Performance',
+                overview: {
+                    title: 'Project Overview',
+                    intro: '<strong>EarthquakeAI</strong> is an educational machine learning project that predicts earthquake magnitudes based on historical seismic data and environmental features. The system combines USGS earthquake data with advanced RandomForest regression to provide magnitude predictions with confidence intervals.',
+                    techStackTitle: 'Tech Stack',
+                    techStack: [
+                        '<strong>Backend:</strong> Django 6.0 + Python 3.14 + DRF (Django REST Framework)',
+                        '<strong>ML Framework:</strong> scikit-learn (RandomForest, StandardScaler)',
+                        '<strong>Frontend:</strong> Three.js (3D Globe), Chart.js (Statistics), Vanilla JavaScript',
+                        '<strong>Database:</strong> SQLite3',
+                        '<strong>IoT Integration:</strong> ESP32 + SW-420 vibration sensors'
+                    ],
+                    keyComponentsTitle: 'Key Components',
+                    keyComponents: [
+                        { title: 'RandomForest Model', desc: '150 estimators, max_depth=12, predicting magnitude from seismic features' },
+                        { title: 'Feature Scaling', desc: 'StandardScaler normalization for all input features' },
+                        { title: 'Confidence Intervals', desc: 'Bootstrap aggregation for uncertainty quantification' },
+                        { title: 'REST API', desc: 'POST /api/vibration/ for predictions' },
+                        { title: '3D Visualization', desc: 'Interactive globe with earthquake markers' },
+                        { title: 'IoT Sensors', desc: 'Real-time vibration data from ESP32' }
+                    ]
+                },
+                datasets: {
+                    title: 'Datasets & Data Sources',
+                    sourceTitle: 'Primary Data Source: USGS Earthquake Hazards Program',
+                    sourceURL: 'URL: https://earthquake.usgs.gov/fdsnws/event/1/query',
+                    sourceDesc: 'The USGS provides real-time earthquake data in GeoJSON format. Our training pipeline automatically fetches earthquakes matching:',
+                    sourceFilters: [
+                        'Minimum magnitude: M 2.5',
+                        'Time window: Last 30 days',
+                        'Global coverage: All latitudes & longitudes'
+                    ],
+                    statsTitle: 'Current Dataset Statistics',
+                    statsTable: [
+                        { metric: 'Total Records', value: '1,600+', notes: 'From last 30 days of USGS data' },
+                        { metric: 'Magnitude Range', value: '2.5 – 8.0+', notes: 'Covers all significant events' },
+                        { metric: 'Depth Range', value: '0 – 650 km', notes: 'Shallow to deep earthquakes' },
+                        { metric: 'Geographic Coverage', value: 'Global (all regions)', notes: 'No geographic filtering' },
+                        { metric: 'Mean Magnitude', value: '4.2 ± 1.3', notes: 'Standard deviation included' },
+                        { metric: 'Update Frequency', value: 'Hourly', notes: 'Via train_model.py script' }
+                    ],
+                    schemaTitle: 'Data Schema',
+                    loadingTitle: 'Loading Data Pipeline',
+                    loadingCmd: 'Command:',
+                    loadingText: 'python load_usgs_data.py or python AiLeranProject/train_model.py',
+                    qualityTitle: 'Data Quality Notes',
+                    qualityCaveats: [
+                        'Magnitude values from USGS (M2.5+ only) — smaller quakes not included',
+                        'Depth estimated from seismic waves — ±5 km uncertainty typical',
+                        'Location names auto-generated from coordinates — may vary slightly',
+                        'Real-time lag: ~2 minutes before USGS publishes final magnitude'
+                    ]
+                },
+                model: {
+                    title: 'ML Model Architecture',
+                    typeTitle: 'Model Type',
+                    typeDesc: '<strong>RandomForestRegressor</strong> from scikit-learn',
+                    hyperTitle: 'Hyperparameters',
+                    hyperTable: [
+                        { param: 'n_estimators', value: '150', rationale: 'Balance between accuracy and training time' },
+                        { param: 'max_depth', value: '12', rationale: 'Prevent overfitting while capturing feature interactions' },
+                        { param: 'min_samples_split', value: '2 (default)', rationale: 'Standard splitting criterion' },
+                        { param: 'min_samples_leaf', value: '1 (default)', rationale: 'Allow fine-grained predictions' },
+                        { param: 'random_state', value: '42', rationale: 'Reproducibility across runs' },
+                        { param: 'n_jobs', value: '-1', rationale: 'Use all CPU cores for parallel training' }
+                    ],
+                    trainingTitle: 'Training Methodology',
+                    trainingList: [
+                        '<strong>Cross-Validation:</strong> 5-fold CV for RMSE estimation',
+                        '<strong>Feature Scaling:</strong> StandardScaler applied before training',
+                        '<strong>Test-Train Split:</strong> Full dataset used (no holdout set)',
+                        '<strong>Evaluation Metric:</strong> Root Mean Squared Error (RMSE)'
+                    ],
+                    performanceTitle: 'Current Model Performance',
+                    performanceCards: [
+                        { value: '0.48', label: 'RMSE', unit: 'magnitude units' },
+                        { value: '1,600+', label: 'Samples', unit: 'earthquakes trained on' },
+                        { value: 'Yes', label: 'Trained', unit: 'model active' }
+                    ],
+                    persistenceTitle: 'Model Persistence',
+                    persistenceList: [
+                        '<strong>Format:</strong> joblib (.pkl files)',
+                        '<strong>Model File:</strong> <code>earthquake_model_v2.pkl</code>',
+                        '<strong>Scaler File:</strong> <code>scaler_model_v2.pkl</code>',
+                        '<strong>Auto-save:</strong> After each training run',
+                        '<strong>Auto-load:</strong> On application startup'
+                    ]
+                },
+                features: {
+                    title: 'Input Features',
+                    pipelineTitle: 'Feature Computation Pipeline',
+                    pipelineDesc: 'Features are computed dynamically using the <code>compute_features(lat, lon, depth)</code> method. This queries the database for contextual earthquakes within a 7-day window and ~100 km radius.',
+                    featureSetTitle: 'Feature Set',
+                    featureTable: [
+                        { index: '0', name: 'nearby_quakes_count', desc: 'Number of M≥2.0 earthquakes in 7-day window within ~100 km (0.9°)', range: '0 – 50+ events' },
+                        { index: '1', name: 'depth', desc: 'Hypocenter depth (user-provided or estimated)', range: '0 – 700 km' },
+                        { index: '2', name: 'time_since_last_big', desc: 'Years since last M≥4.0 earthquake in same region', range: '0 – 10+ years' },
+                        { index: '3', name: 'latitude', desc: 'Geographic latitude of epicenter', range: '-90 to +90°' },
+                        { index: '4', name: 'longitude', desc: 'Geographic longitude of epicenter', range: '-180 to +180°' }
+                    ],
+                    geoParamsTitle: 'Geographic Search Parameters',
+                    geoParamsList: [
+                        '<strong>Search Radius:</strong> ~100 km (0.9° in latitude, adjusted for longitude)',
+                        '<strong>Time Window:</strong> 7 days',
+                        '<strong>Minimum Magnitude:</strong> M 2.0 (for nearby counts), M 4.0 (for last-big calculation)',
+                        '<strong>Latitude Correction:</strong> Uses cos(latitude) for meridian convergence'
+                    ],
+                    scalingTitle: 'Feature Scaling',
+                    scalingDesc: 'Before training and prediction, all features are normalized using <strong>StandardScaler</strong>:',
+                    scalingFormula: 'X_scaled = (X - mean) / std_dev',
+                    scalingNote: 'This ensures features with different scales (e.g., count vs. years) have equal influence on the model.'
+                },
+                formulas: {
+                    title: 'Mathematical Formulas',
+                    magPredTitle: 'Magnitude Prediction',
+                    magPredFormula: '<strong>M_pred = mean([tree₁(X), tree₂(X), ..., tree₁₅₀(X)])</strong><br><br>Each of the 150 trees makes an independent prediction, and the final magnitude is the average (bagging ensemble)',
+                    confidenceTitle: 'Confidence Score',
+                    confidenceFormula: '<strong>confidence = max(0.6, 1.0 - (σ_trees / 2.0))</strong><br><br>Where σ_trees = std_dev of predictions across all 150 trees<br><br><strong>Interpretation:</strong><ul style="margin: 10px 0;"><li>If all trees agree (σ ≈ 0) → confidence ≈ 1.0 (100%)</li><li>If trees disagree (σ ≈ 2.0) → confidence ≈ 0.6 (60%)</li><li>Floor at 0.6 ensures minimal confidence even with high disagreement</li></ul>',
+                    rangeTitle: 'Magnitude Range (Uncertainty Bounds)',
+                    rangeFormula: '<strong>Lower Bound = M_pred - 1.96 × σ_trees</strong><br><strong>Upper Bound = M_pred + 1.96 × σ_trees</strong><br><br><strong>Confidence Interval:</strong> 95% (±1.96 standard deviations)<br><br><strong>Example:</strong> If M_pred = 4.5, σ = 0.25<br>Range: [4.01, 4.99] with 95% probability',
+                    locationUncertTitle: 'Location Uncertainty',
+                    locationUncertFormula: '<strong>Location_uncertainty = 0.2° (constant)</strong><br><br>Represents the search radius tolerance in prediction queries.<br>At equator: ~22 km, At 45° latitude: ~15.5 km',
+                    rmseTitle: 'Error Metric: RMSE',
+                    rmseFormula: '<strong>RMSE = √(Σ(y_actual - y_pred)² / n)</strong><br><br>Current: <strong>0.48 magnitude units</strong><br><br>Meaning: On average, predictions deviate ±0.48 from actual magnitude',
+                    scalingFormulaTitle: 'Feature Scaling Formula',
+                    scalingFormulaText: '<strong>X_scaled = (X - μ) / σ</strong><br><br>Where:<br>μ = mean of feature<br>σ = standard deviation of feature<br><br>Result: Mean = 0, Std = 1 for all features',
+                    baggingTitle: 'Bootstrap Aggregation (Bagging)',
+                    baggingDesc: 'RandomForest uses bootstrap sampling internally:',
+                    baggingFormula: '<strong>Each tree is trained on a random sample (with replacement) of ~63.2% of data</strong><br><br>This creates diversity among trees, improving generalization'
+                },
+                performance: {
+                    title: 'Model Performance & Evaluation',
+                    keyMetricsTitle: 'Key Metrics',
+                    keyMetricsTable: [
+                        { metric: 'RMSE', value: '0.48', interpretation: 'Predictions typically within ±0.5 magnitude units' },
+                        { metric: 'Training Samples', value: '1,600+', interpretation: 'Sufficient for stable RandomForest' },
+                        { metric: 'Cross-Validation', value: '5-fold', interpretation: 'Standard practice to avoid overfitting' },
+                        { metric: 'Model Status', value: 'Trained ✓', interpretation: 'Active and ready for predictions' },
+                        { metric: 'Feature Count', value: '5', interpretation: 'nearby_quakes, depth, time_since, lat, lon' }
+                    ],
+                    cvResultsTitle: 'Cross-Validation Results',
+                    cvResultsText: '<strong>Method:</strong> 5-Fold Cross-Validation<br><strong>Process:</strong> Data split into 5 folds, each fold tested while other 4 train<br><strong>Final RMSE:</strong> Average of all 5 fold results<br><strong>Variance:</strong> Low (indicates stable model performance)',
+                    featureImportanceTitle: 'Feature Importance Analysis',
+                    featureImportanceDesc: '<strong>RandomForest automatically ranks feature importance</strong> based on how much each feature reduces impurity (Gini) across splits:',
+                    featureImportanceList: [
+                        '<strong>1. nearby_quakes_count</strong> – Most predictive (seismic activity indicator)',
+                        '<strong>2. depth</strong> – Strong signal (shallow → stronger shaking)',
+                        '<strong>3. time_since_last_big</strong> – Moderate (stress accumulation over time)',
+                        '<strong>4. latitude</strong> – Weak (geographic zone effects)',
+                        '<strong>5. longitude</strong> – Weak (geographic zone effects)'
+                    ],
+                    limitationsTitle: 'Known Limitations',
+                    limitationsList: [
+                        '<strong>Aftershock Clustering:</strong> Model doesn\'t account for temporal dependency (aftershocks)',
+                        '<strong>Sparse Historical Data:</strong> For rare regions, predictions may be unreliable',
+                        '<strong>Magnitude Type Variation:</strong> USGS uses multiple magnitude scales (mb, Ms, Mw) — not normalized',
+                        '<strong>No Pre-Earthquake Signals:</strong> Model trained on past data only, cannot detect foreshocks',
+                        '<strong>Recency Bias:</strong> Recent data (last 30 days) may overweight in predictions'
+                    ],
+                    improvementsTitle: 'Future Improvements',
+                    improvementsList: [
+                        'Add temporal features (day-of-week, time-of-day effects)',
+                        'Integrate tectonic plate boundary data',
+                        'Use XGBoost or LightGBM for potentially better performance',
+                        'Implement anomaly detection for prediction outliers',
+                        'Train separate models per seismic region (transfer learning)',
+                        'Real-time model retraining with streaming USGS data'
+                    ]
+                }
+            },
+            ru: {
+                pageTitle: '📖 Документация EarthquakeAI',
+                mapBtn: 'Карта',
+                statsBtn: 'Статистика',
+                langSwitch: 'EN',
+                tabOverview: 'Обзор',
+                tabDatasets: 'Датасеты',
+                tabModel: 'Модель',
+                tabFeatures: 'Признаки',
+                tabFormulas: 'Формулы',
+                tabPerformance: 'Производительность',
+                overview: {
+                    title: 'Обзор проекта',
+                    intro: '<strong>EarthquakeAI</strong> — образовательный проект машинного обучения, который предсказывает магнитуду землетрясений на основе исторических сейсмических данных и характеристик окружающей среды. Система объединяет данные USGS с продвинутой регрессией RandomForest для получения прогнозов магнитуды с доверительными интервалами.',
+                    techStackTitle: 'Технологический стек',
+                    techStack: [
+                        '<strong>Бэкенд:</strong> Django 6.0 + Python 3.14 + DRF (Django REST Framework)',
+                        '<strong>ML-фреймворк:</strong> scikit-learn (RandomForest, StandardScaler)',
+                        '<strong>Фронтенд:</strong> Three.js (3D-глобус), Chart.js (статистика), Vanilla JavaScript',
+                        '<strong>База данных:</strong> SQLite3',
+                        '<strong>IoT-интеграция:</strong> ESP32 + датчики вибрации SW-420'
+                    ],
+                    keyComponentsTitle: 'Ключевые компоненты',
+                    keyComponents: [
+                        { title: 'Модель RandomForest', desc: '150 деревьев решений, max_depth=12, прогнозирование магнитуды по сейсмическим признакам' },
+                        { title: 'Масштабирование признаков', desc: 'Нормализация StandardScaler для всех входных признаков' },
+                        { title: 'Доверительные интервалы', desc: 'Бутстрэп-агрегация для количественной оценки неопределённости' },
+                        { title: 'REST API', desc: 'POST /api/vibration/ для прогнозов' },
+                        { title: '3D-визуализация', desc: 'Интерактивный глобус с маркерами землетрясений' },
+                        { title: 'IoT-датчики', desc: 'Данные вибрации в реальном времени с ESP32' }
+                    ]
+                },
+                datasets: {
+                    title: 'Датасеты и источники данных',
+                    sourceTitle: 'Основной источник: Программа сейсмической опасности USGS',
+                    sourceURL: 'URL: https://earthquake.usgs.gov/fdsnws/event/1/query',
+                    sourceDesc: 'USGS предоставляет данные о землетрясениях в реальном времени в формате GeoJSON. Наш пайплайн обучения автоматически загружает землетрясения, соответствующие:',
+                    sourceFilters: [
+                        'Минимальная магнитуда: M 2.5',
+                        'Временной интервал: последние 30 дней',
+                        'Глобальный охват: все широты и долготы'
+                    ],
+                    statsTitle: 'Текущая статистика датасета',
+                    statsTable: [
+                        { metric: 'Всего записей', value: '1,600+', notes: 'Из последних 30 дней данных USGS' },
+                        { metric: 'Диапазон магнитуд', value: '2.5 – 8.0+', notes: 'Охватывает все значительные события' },
+                        { metric: 'Диапазон глубин', value: '0 – 650 км', notes: 'От поверхностных до глубоких' },
+                        { metric: 'Географический охват', value: 'Глобальный (все регионы)', notes: 'Без географической фильтрации' },
+                        { metric: 'Средняя магнитуда', value: '4.2 ± 1.3', notes: 'Включено стандартное отклонение' },
+                        { metric: 'Частота обновления', value: 'Ежечасно', notes: 'Скриптом train_model.py' }
+                    ],
+                    schemaTitle: 'Схема данных',
+                    loadingTitle: 'Пайплайн загрузки данных',
+                    loadingCmd: 'Команда:',
+                    loadingText: 'python load_usgs_data.py или python AiLeranProject/train_model.py',
+                    qualityTitle: 'Примечания к качеству данных',
+                    qualityCaveats: [
+                        'Значения магнитуды от USGS (только M2.5+) — мелкие землетрясения не включены',
+                        'Глубина оценивается по сейсмическим волнам — типичная погрешность ±5 км',
+                        'Названия местоположений автоматически генерируются из координат — могут незначительно отличаться',
+                        'Задержка в реальном времени: ~2 минуты до публикации окончательной магнитуды USGS'
+                    ]
+                },
+                model: {
+                    title: 'Архитектура ML-модели',
+                    typeTitle: 'Тип модели',
+                    typeDesc: '<strong>RandomForestRegressor</strong> из scikit-learn',
+                    hyperTitle: 'Гиперпараметры',
+                    hyperTable: [
+                        { param: 'n_estimators', value: '150', rationale: 'Баланс между точностью и временем обучения' },
+                        { param: 'max_depth', value: '12', rationale: 'Предотвращение переобучения при сохранении взаимодействий признаков' },
+                        { param: 'min_samples_split', value: '2 (по умолчанию)', rationale: 'Стандартный критерий разбиения' },
+                        { param: 'min_samples_leaf', value: '1 (по умолчанию)', rationale: 'Разрешить детальные прогнозы' },
+                        { param: 'random_state', value: '42', rationale: 'Воспроизводимость между запусками' },
+                        { param: 'n_jobs', value: '-1', rationale: 'Использовать все ядра CPU для параллельного обучения' }
+                    ],
+                    trainingTitle: 'Методология обучения',
+                    trainingList: [
+                        '<strong>Кросс-валидация:</strong> 5-кратная CV для оценки RMSE',
+                        '<strong>Масштабирование признаков:</strong> StandardScaler применяется перед обучением',
+                        '<strong>Разделение тест-трейн:</strong> Используется полный датасет (без выделенного тестового набора)',
+                        '<strong>Метрика оценки:</strong> Среднеквадратичная ошибка (RMSE)'
+                    ],
+                    performanceTitle: 'Текущая производительность модели',
+                    performanceCards: [
+                        { value: '0.48', label: 'RMSE', unit: 'единиц магнитуды' },
+                        { value: '1,600+', label: 'Сэмплов', unit: 'землетрясений обучено' },
+                        { value: 'Да', label: 'Обучена', unit: 'модель активна' }
+                    ],
+                    persistenceTitle: 'Сохранение модели',
+                    persistenceList: [
+                        '<strong>Формат:</strong> joblib (файлы .pkl)',
+                        '<strong>Файл модели:</strong> <code>earthquake_model_v2.pkl</code>',
+                        '<strong>Файл скейлера:</strong> <code>scaler_model_v2.pkl</code>',
+                        '<strong>Автосохранение:</strong> После каждого цикла обучения',
+                        '<strong>Автозагрузка:</strong> При запуске приложения'
+                    ]
+                },
+                features: {
+                    title: 'Входные признаки',
+                    pipelineTitle: 'Пайплайн вычисления признаков',
+                    pipelineDesc: 'Признаки вычисляются динамически с помощью метода <code>compute_features(lat, lon, depth)</code>. Он запрашивает базу данных для поиска контекстных землетрясений в окне 7 дней и радиусе ~100 км.',
+                    featureSetTitle: 'Набор признаков',
+                    featureTable: [
+                        { index: '0', name: 'nearby_quakes_count', desc: 'Количество землетрясений M≥2.0 за 7 дней в радиусе ~100 км (0.9°)', range: '0 – 50+ событий' },
+                        { index: '1', name: 'depth', desc: 'Глубина гипоцентра (предоставленная пользователем или оценочная)', range: '0 – 700 км' },
+                        { index: '2', name: 'time_since_last_big', desc: 'Лет с последнего землетрясения M≥4.0 в том же регионе', range: '0 – 10+ лет' },
+                        { index: '3', name: 'latitude', desc: 'Географическая широта эпицентра', range: '-90 до +90°' },
+                        { index: '4', name: 'longitude', desc: 'Географическая долгота эпицентра', range: '-180 до +180°' }
+                    ],
+                    geoParamsTitle: 'Параметры географического поиска',
+                    geoParamsList: [
+                        '<strong>Радиус поиска:</strong> ~100 км (0.9° по широте, скорректировано для долготы)',
+                        '<strong>Временное окно:</strong> 7 дней',
+                        '<strong>Минимальная магнитуда:</strong> M 2.0 (для подсчёта близких), M 4.0 (для расчёта последнего крупного)',
+                        '<strong>Коррекция широты:</strong> Использует cos(latitude) для сходимости меридианов'
+                    ],
+                    scalingTitle: 'Масштабирование признаков',
+                    scalingDesc: 'Перед обучением и прогнозированием все признаки нормализуются с помощью <strong>StandardScaler</strong>:',
+                    scalingFormula: 'X_scaled = (X - среднее) / std_dev',
+                    scalingNote: 'Это гарантирует, что признаки с разными шкалами (например, количество против лет) оказывают равное влияние на модель.'
+                },
+                formulas: {
+                    title: 'Математические формулы',
+                    magPredTitle: 'Прогноз магнитуды',
+                    magPredFormula: '<strong>M_pred = среднее([дерево₁(X), дерево₂(X), ..., дерево₁₅₀(X)])</strong><br><br>Каждое из 150 деревьев делает независимый прогноз, а итоговая магнитуда — среднее (бэггинг-ансамбль)',
+                    confidenceTitle: 'Оценка уверенности',
+                    confidenceFormula: '<strong>уверенность = max(0.6, 1.0 - (σ_деревьев / 2.0))</strong><br><br>Где σ_деревьев = стандартное отклонение прогнозов всех 150 деревьев<br><br><strong>Интерпретация:</strong><ul style="margin: 10px 0;"><li>Если все деревья согласны (σ ≈ 0) → уверенность ≈ 1.0 (100%)</li><li>Если деревья расходятся (σ ≈ 2.0) → уверенность ≈ 0.6 (60%)</li><li>Нижняя граница 0.6 обеспечивает минимальную уверенность даже при сильных разногласиях</li></ul>',
+                    rangeTitle: 'Диапазон магнитуды (границы неопределённости)',
+                    rangeFormula: '<strong>Нижняя граница = M_pred - 1.96 × σ_деревьев</strong><br><strong>Верхняя граница = M_pred + 1.96 × σ_деревьев</strong><br><br><strong>Доверительный интервал:</strong> 95% (±1.96 стандартных отклонений)<br><br><strong>Пример:</strong> Если M_pred = 4.5, σ = 0.25<br>Диапазон: [4.01, 4.99] с вероятностью 95%',
+                    locationUncertTitle: 'Неопределённость местоположения',
+                    locationUncertFormula: '<strong>Неопределённость_местоположения = 0.2° (константа)</strong><br><br>Представляет допустимый радиус поиска в прогнозных запросах.<br>На экваторе: ~22 км, на широте 45°: ~15.5 км',
+                    rmseTitle: 'Метрика ошибки: RMSE',
+                    rmseFormula: '<strong>RMSE = √(Σ(y_факт - y_прогноз)² / n)</strong><br><br>Текущая: <strong>0.48 единиц магнитуды</strong><br><br>Значение: В среднем прогнозы отклоняются на ±0.48 от фактической магнитуды',
+                    scalingFormulaTitle: 'Формула масштабирования признаков',
+                    scalingFormulaText: '<strong>X_scaled = (X - μ) / σ</strong><br><br>Где:<br>μ = среднее признака<br>σ = стандартное отклонение признака<br><br>Результат: Среднее = 0, СКО = 1 для всех признаков',
+                    baggingTitle: 'Бутстрэп-агрегация (бэггинг)',
+                    baggingDesc: 'RandomForest внутренне использует бутстрэп-выборку:',
+                    baggingFormula: '<strong>Каждое дерево обучается на случайной выборке (с возвращением) ~63.2% данных</strong><br><br>Это создаёт разнообразие среди деревьев, улучшая обобщающую способность'
+                },
+                performance: {
+                    title: 'Производительность и оценка модели',
+                    keyMetricsTitle: 'Ключевые метрики',
+                    keyMetricsTable: [
+                        { metric: 'RMSE', value: '0.48', interpretation: 'Прогнозы обычно в пределах ±0.5 единиц магнитуды' },
+                        { metric: 'Обучающих примеров', value: '1,600+', interpretation: 'Достаточно для стабильного RandomForest' },
+                        { metric: 'Кросс-валидация', value: '5-кратная', interpretation: 'Стандартная практика для избежания переобучения' },
+                        { metric: 'Статус модели', value: 'Обучена ✓', interpretation: 'Активна и готова к прогнозам' },
+                        { metric: 'Количество признаков', value: '5', interpretation: 'nearby_quakes, depth, time_since, lat, lon' }
+                    ],
+                    cvResultsTitle: 'Результаты кросс-валидации',
+                    cvResultsText: '<strong>Метод:</strong> 5-кратная кросс-валидация<br><strong>Процесс:</strong> Данные разделены на 5 фолдов, каждый фолд тестируется, пока остальные 4 обучаются<br><strong>Итоговая RMSE:</strong> Среднее результатов всех 5 фолдов<br><strong>Дисперсия:</strong> Низкая (указывает на стабильную работу модели)',
+                    featureImportanceTitle: 'Анализ важности признаков',
+                    featureImportanceDesc: '<strong>RandomForest автоматически ранжирует важность признаков</strong> на основе того, насколько каждый признак уменьшает неопределённость (Gini) при разбиениях:',
+                    featureImportanceList: [
+                        '<strong>1. nearby_quakes_count</strong> – Наиболее прогностичный (индикатор сейсмической активности)',
+                        '<strong>2. depth</strong> – Сильный сигнал (мелкие → более сильные толчки)',
+                        '<strong>3. time_since_last_big</strong> – Умеренный (накопление напряжений со временем)',
+                        '<strong>4. latitude</strong> – Слабый (эффекты географических зон)',
+                        '<strong>5. longitude</strong> – Слабый (эффекты географических зон)'
+                    ],
+                    limitationsTitle: 'Известные ограничения',
+                    limitationsList: [
+                        '<strong>Кластеризация афтершоков:</strong> Модель не учитывает временную зависимость (афтершоки)',
+                        '<strong>Разреженность исторических данных:</strong> Для редких регионов прогнозы могут быть ненадёжными',
+                        '<strong>Вариация типов магнитуд:</strong> USGS использует несколько шкал магнитуд (mb, Ms, Mw) — не нормализовано',
+                        '<strong>Отсутствие предвестников:</strong> Модель обучена только на прошлых данных, не может обнаружить форшоки',
+                        '<strong>Смещение в пользу недавних данных:</strong> Данные за последние 30 дней могут иметь избыточный вес в прогнозах'
+                    ],
+                    improvementsTitle: 'Будущие улучшения',
+                    improvementsList: [
+                        'Добавить временные признаки (день недели, время суток)',
+                        'Интегрировать данные о границах тектонических плит',
+                        'Использовать XGBoost или LightGBM для потенциально лучшей производительности',
+                        'Реализовать детекцию аномалий для выбросов прогнозов',
+                        'Обучать отдельные модели для каждого сейсмического региона (трансферное обучение)',
+                        'Переобучение модели в реальном времени с потоковыми данными USGS'
+                    ]
+                }
+            }
+        };
+
+        let currentLang = localStorage.getItem('earthquakeai_lang') || 'en';
+        const langToggle = document.getElementById('langToggle');
+        const langText = document.getElementById('langText');
+
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('mapBtn').innerHTML = `<i class="fas fa-globe"></i> ${t.mapBtn}`;
+            document.getElementById('statsBtn').innerHTML = `<i class="fas fa-chart-bar"></i> ${t.statsBtn}`;
+            langText.textContent = t.langSwitch;
+
+            document.getElementById('tabOverview').innerHTML = `<i class="fas fa-book"></i> ${t.tabOverview}`;
+            document.getElementById('tabDatasets').innerHTML = `<i class="fas fa-database"></i> ${t.tabDatasets}`;
+            document.getElementById('tabModel').innerHTML = `<i class="fas fa-brain"></i> ${t.tabModel}`;
+            document.getElementById('tabFeatures').innerHTML = `<i class="fas fa-sliders-h"></i> ${t.tabFeatures}`;
+            document.getElementById('tabFormulas').innerHTML = `<i class="fas fa-calculator"></i> ${t.tabFormulas}`;
+            document.getElementById('tabPerformance').innerHTML = `<i class="fas fa-chart-line"></i> ${t.tabPerformance}`;
+
+            buildOverview(lang);
+            buildDatasets(lang);
+            buildModel(lang);
+            buildFeatures(lang);
+            buildFormulas(lang);
+            buildPerformance(lang);
+        }
+
+        function wrapTable(html) {
+            return `<div class="table-responsive">${html}</div>`;
+        }
+
+        function buildOverview(lang) {
+            const t = translations[lang].overview;
+            const html = `
+                <div class="section">
+                    <h2><i class="fas fa-info-circle"></i> ${t.title}</h2>
+                    <p>${t.intro}</p>
+                    <h3><i class="fas fa-cube"></i> ${t.techStackTitle}</h3>
+                    <ul>${t.techStack.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h3><i class="fas fa-target"></i> ${t.keyComponentsTitle}</h3>
+                    <div class="feature-grid">
+                        ${t.keyComponents.map(c => `<div class="feature-item"><strong>${c.title}</strong><small>${c.desc}</small></div>`).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('overview').innerHTML = html;
+        }
+
+        function buildDatasets(lang) {
+            const t = translations[lang].datasets;
+            const html = `
+                <div class="section">
+                    <h2><i class="fas fa-database"></i> ${t.title}</h2>
+                    <h3><i class="fas fa-globe"></i> ${t.sourceTitle}</h3>
+                    <p><strong>${t.sourceURL}</strong></p>
+                    <p>${t.sourceDesc}</p>
+                    <ul>${t.sourceFilters.map(f => `<li>${f}</li>`).join('')}</ul>
+                    <h3><i class="fas fa-chart-bar"></i> ${t.statsTitle}</h3>
+                    ${wrapTable(`
+                        <table>
+                            <thead><tr><th>${lang === 'ru' ? 'Метрика' : 'Metric'}</th><th>${lang === 'ru' ? 'Значение' : 'Value'}</th><th>${lang === 'ru' ? 'Примечания' : 'Notes'}</th></tr></thead>
+                            <tbody>${t.statsTable.map(r => `<tr><td><strong>${r.metric}</strong></td><td>${r.value}</td><td>${r.notes}</td></tr>`).join('')}</tbody>
+                        </table>
+                    `)}
+                    <h3><i class="fas fa-cube"></i> ${t.schemaTitle}</h3>
+                    <div class="code-block">
+{
+  "timestamp": "2026-06-20T10:30:45Z",
+  "latitude": 41.3,
+  "longitude": 69.2,
+  "magnitude": 4.5,
+  "depth": 15.0,
+  "location": "10 km NE of Tashkent, Uzbekistan"
+}
+                    </div>
+                    <h3><i class="fas fa-download"></i> ${t.loadingTitle}</h3>
+                    <div class="success-box">
+                        <strong>${t.loadingCmd}</strong><br>
+                        <code>${t.loadingText}</code>
+                    </div>
+                    <h3><i class="fas fa-warning"></i> ${t.qualityTitle}</h3>
+                    <div class="warning-box">
+                        <strong>⚠️ ${lang === 'ru' ? 'Предостережения' : 'Caveats'}:</strong>
+                        <ul style="margin: 10px 0;">${t.qualityCaveats.map(c => `<li>${c}</li>`).join('')}</ul>
+                    </div>
+                </div>
+            `;
+            document.getElementById('datasets').innerHTML = html;
+        }
+
+        function buildModel(lang) {
+            const t = translations[lang].model;
+            const html = `
+                <div class="section">
+                    <h2><i class="fas fa-brain"></i> ${t.title}</h2>
+                    <h3><i class="fas fa-layer-group"></i> ${t.typeTitle}</h3>
+                    <p>${t.typeDesc}</p>
+                    <h3><i class="fas fa-cog"></i> ${t.hyperTitle}</h3>
+                    ${wrapTable(`
+                        <table>
+                            <thead><tr><th>${lang === 'ru' ? 'Параметр' : 'Parameter'}</th><th>${lang === 'ru' ? 'Значение' : 'Value'}</th><th>${lang === 'ru' ? 'Обоснование' : 'Rationale'}</th></tr></thead>
+                            <tbody>${t.hyperTable.map(r => `<tr><td><strong>${r.param}</strong></td><td>${r.value}</td><td>${r.rationale}</td></tr>`).join('')}</tbody>
+                        </table>
+                    `)}
+                    <h3><i class="fas fa-check-double"></i> ${t.trainingTitle}</h3>
+                    <ul>${t.trainingList.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h3><i class="fas fa-chart-line"></i> ${t.performanceTitle}</h3>
+                    <div>${t.performanceCards.map(c => `<div class="stat-card">${c.label}<strong>${c.value}</strong><small>${c.unit}</small></div>`).join('')}</div>
+                    <h3><i class="fas fa-save"></i> ${t.persistenceTitle}</h3>
+                    <ul>${t.persistenceList.map(item => `<li>${item}</li>`).join('')}</ul>
+                </div>
+            `;
+            document.getElementById('model').innerHTML = html;
+        }
+
+        function buildFeatures(lang) {
+            const t = translations[lang].features;
+            const html = `
+                <div class="section">
+                    <h2><i class="fas fa-sliders-h"></i> ${t.title}</h2>
+                    <h3><i class="fas fa-info-circle"></i> ${t.pipelineTitle}</h3>
+                    <p>${t.pipelineDesc}</p>
+                    <h3><i class="fas fa-list"></i> ${t.featureSetTitle}</h3>
+                    ${wrapTable(`
+                        <table>
+                            <thead><tr><th>${lang === 'ru' ? 'Индекс' : 'Index'}</th><th>${lang === 'ru' ? 'Признак' : 'Feature Name'}</th><th>${lang === 'ru' ? 'Описание' : 'Description'}</th><th>${lang === 'ru' ? 'Диапазон/Единицы' : 'Range/Units'}</th></tr></thead>
+                            <tbody>${t.featureTable.map(r => `<tr><td><strong>${r.index}</strong></td><td><strong>${r.name}</strong></td><td>${r.desc}</td><td>${r.range}</td></tr>`).join('')}</tbody>
+                        </table>
+                    `)}
+                    <h3><i class="fas fa-map-pin"></i> ${t.geoParamsTitle}</h3>
+                    <ul>${t.geoParamsList.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <div class="code-block">
+def compute_features(latitude, longitude, depth):
+    seven_days_ago = now - timedelta(days=7)
+
+    lat_range = 0.9
+    lon_range = 0.9 / cos(radians(latitude))
+
+    nearby = count(earthquakes where
+        timestamp >= seven_days_ago AND
+        magnitude > 2.0 AND
+        lat in [lat±range] AND
+        lon in [lon±range])
+
+    last_big = find(earthquakes where
+        magnitude >= 4.0 in same region)
+
+    time_since = (now - last_big.timestamp).days / 365.25
+
+    return [nearby, depth, time_since, latitude, longitude]
+                    </div>
+                    <h3><i class="fas fa-balance-scale"></i> ${t.scalingTitle}</h3>
+                    <p>${t.scalingDesc}</p>
+                    <div class="formula-box">${t.scalingFormula}</div>
+                    <p>${t.scalingNote}</p>
+                </div>
+            `;
+            document.getElementById('features').innerHTML = html;
+        }
+
+        function buildFormulas(lang) {
+            const t = translations[lang].formulas;
+            const html = `
+                <div class="section">
+                    <h2><i class="fas fa-calculator"></i> ${t.title}</h2>
+                    <h3><i class="fas fa-mountain"></i> ${t.magPredTitle}</h3>
+                    <div class="formula-box">${t.magPredFormula}</div>
+                    <h3><i class="fas fa-percent"></i> ${t.confidenceTitle}</h3>
+                    <div class="formula-box">${t.confidenceFormula}</div>
+                    <h3><i class="fas fa-expand"></i> ${t.rangeTitle}</h3>
+                    <div class="formula-box">${t.rangeFormula}</div>
+                    <h3><i class="fas fa-location-dot"></i> ${t.locationUncertTitle}</h3>
+                    <div class="formula-box">${t.locationUncertFormula}</div>
+                    <h3><i class="fas fa-square-root-variable"></i> ${t.rmseTitle}</h3>
+                    <div class="formula-box">${t.rmseFormula}</div>
+                    <h3><i class="fas fa-cube"></i> ${t.scalingFormulaTitle}</h3>
+                    <div class="formula-box">${t.scalingFormulaText}</div>
+                    <h3><i class="fas fa-chart-pie"></i> ${t.baggingTitle}</h3>
+                    <p>${t.baggingDesc}</p>
+                    <div class="formula-box">${t.baggingFormula}</div>
+                </div>
+            `;
+            document.getElementById('formulas').innerHTML = html;
+        }
+
+        function buildPerformance(lang) {
+            const t = translations[lang].performance;
+            const html = `
+                <div class="section">
+                    <h2><i class="fas fa-chart-line"></i> ${t.title}</h2>
+                    <h3><i class="fas fa-metrics"></i> ${t.keyMetricsTitle}</h3>
+                    ${wrapTable(`
+                        <table>
+                            <thead><tr><th>${lang === 'ru' ? 'Метрика' : 'Metric'}</th><th>${lang === 'ru' ? 'Значение' : 'Value'}</th><th>${lang === 'ru' ? 'Интерпретация' : 'Interpretation'}</th></tr></thead>
+                            <tbody>${t.keyMetricsTable.map(r => `<tr><td><strong>${r.metric}</strong></td><td><strong>${r.value}</strong></td><td>${r.interpretation}</td></tr>`).join('')}</tbody>
+                        </table>
+                    `)}
+                    <h3><i class="fas fa-microscope"></i> ${t.cvResultsTitle}</h3>
+                    <div class="success-box">${t.cvResultsText}</div>
+                    <h3><i class="fas fa-search-plus"></i> ${t.featureImportanceTitle}</h3>
+                    <p>${t.featureImportanceDesc}</p>
+                    <ul>${t.featureImportanceList.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h3><i class="fas fa-warning"></i> ${t.limitationsTitle}</h3>
+                    <div class="warning-box"><ul style="margin: 10px 0;">${t.limitationsList.map(item => `<li>${item}</li>`).join('')}</ul></div>
+                    <h3><i class="fas fa-rocket"></i> ${t.improvementsTitle}</h3>
+                    <ul>${t.improvementsList.map(item => `<li>${item}</li>`).join('')}</ul>
+                </div>
+            `;
+            document.getElementById('performance').innerHTML = html;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const icon = themeToggle.querySelector('i');
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+        themeToggle.addEventListener('click', () => setTheme(!document.body.classList.contains('light-mode')));
+        if (localStorage.getItem('theme') === 'light') setTheme(true);
+
+        // Language toggle
+        langToggle.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            localStorage.setItem('earthquakeai_lang', currentLang);
+            applyLanguage(currentLang);
+        });
+
+        // Initial build
+        applyLanguage(currentLang);
+    </script>
+</body>
+</html>

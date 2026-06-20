@@ -7,6 +7,8 @@ router = DefaultRouter()
 router.register(r'earthquakes', views.EarthquakeViewSet)
 
 urlpatterns = [
+
+    path('about/', views.about_page, name='about'),
     path('api/iot/latest/', views_iot.iot_latest_data, name='iot_latest'),
 
     # Основные страницы
