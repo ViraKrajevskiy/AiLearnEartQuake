@@ -49,10 +49,10 @@ class IoTSensorData(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
 
-    # Оставляем только вибрацию и статус
-    vibration_count = models.IntegerField(default=0)
     vibration_intensity = models.FloatField(null=True, blank=True)
+    location_name = models.CharField(max_length=255, null=True, blank=True)
 
+    vibration_count = models.IntegerField(default=0)
     signal_strength = models.IntegerField(null=True, blank=True)
     battery_level = models.IntegerField(null=True, blank=True)
 

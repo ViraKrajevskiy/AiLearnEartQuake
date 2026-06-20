@@ -1,16 +1,47 @@
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework import status
-from django.utils import timezone
 from datetime import datetime
 import json
+from django.utils import timezone
+from datetime import timedelta
+from rest_framework.response import Response
 
 from .models import IoTSensorData
 from .ml_model import EarthquakePredictor
 
 predictor = EarthquakePredictor()
 
+@api_view(['GET'])
+def iot_latest_data(request):
+    # Берём последние записи, сортируем по времени датчика (новые сверху)
+    latest = IoTSensorData.objects.order_by('-sensor_timestamp').first()
+    is_online = False
+    if latest:
+        is_online = (timezone.now() - latest.sensor_timestamp) < timedelta(seconds=30)
+
+    # Берём до 10 последних записей
+    recent_sensors = IoTSensorData.objects.order_by('-sensor_timestamp')[:10]
+
+    data = []
+    for d in recent_sensors:
+        # Определяем значение вибрации: предпочитаем vibration_intensity (баллы),
+        # если оно не задано — используем vibration_count (старые записи)
+        vib_value = d.vibration_intensity if d.vibration_intensity is not None else d.vibration_count
+        data.append({
+            'sensor_id': d.sensor_id,
+            'vibration': vib_value,            # теперь это баллы 0-20
+            'location': d.location_name,
+            'timestamp': d.sensor_timestamp.isoformat(),
+            'battery': d.battery_level,
+        })
+
+    return Response({
+        "status": "online" if is_online else "offline",
+        "sensors": data,
+        "last_vibration": latest.vibration_intensity if latest and latest.vibration_intensity is not None else (latest.vibration_count if latest else 0),
+        "location": latest.location_name if latest else "N/A"
+    })
 
 @csrf_exempt
 @api_view(['POST'])
@@ -67,21 +98,6 @@ def iot_sensor_endpoint(request):
         return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def iot_latest_data(request):
-    """
-    Получить последние 10 записей датчиков
-    """
-    latest = IoTSensorData.objects.all()[:10]
-    data = [{
-        'sensor_id': d.sensor_id,
-        'vibration': d.vibration_count,
-        'location': d.location_name,
-        'timestamp': d.sensor_timestamp.isoformat(),
-        'battery': d.battery_level,
-    } for d in latest]
-
-    return Response({'sensors': data}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

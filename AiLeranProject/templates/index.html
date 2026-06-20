@@ -4,36 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌍 EarthquakeAI — Prediction & Education</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg: #000010;
-            --panel-bg: rgba(10, 10, 30, 0.92);
-            --text: #c8cce0;
-            --text-secondary: #99a0c0;
-            --border: rgba(255, 255, 255, 0.12);
-            --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            --input-bg: rgba(255, 255, 255, 0.06);
-            --input-border: rgba(255, 255, 255, 0.18);
-            --btn-bg: linear-gradient(135deg, #667eea, #b840c8);
+            --bg: #020218;
+            --panel-bg: rgba(12, 12, 35, 0.85);
+            --text: #eef0ff;
+            --text-secondary: #b0b3cc;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(255, 255, 255, 0.15);
+            --btn-bg: linear-gradient(135deg, #667eea, #c44ed8);
             --header-gradient: linear-gradient(135deg, #667eea, #f093fb);
             --panel-header-gradient: linear-gradient(135deg, #a0b8ff, #f0a0ff);
-            --tooltip-bg: rgba(10, 14, 26, 0.96);
+            --tooltip-bg: rgba(8, 10, 28, 0.96);
             --tooltip-text: #d0d4f0;
             --tooltip-loc-gradient: linear-gradient(135deg, #ffc107, #f093fb);
-            --info-box-bg: rgba(102, 126, 234, 0.08);
-            --example-bg: rgba(255, 152, 0, 0.1);
-            --table-stripe: rgba(255, 255, 255, 0.03);
-            --scrollbar-thumb: rgba(102, 126, 234, 0.4);
+            --info-box-bg: rgba(102, 126, 234, 0.15);
+            --example-bg: rgba(255, 152, 0, 0.12);
+            --table-stripe: rgba(255, 255, 255, 0.05);
+            --scrollbar-thumb: rgba(102, 126, 234, 0.45);
             --scrollbar-track: rgba(255, 255, 255, 0.04);
+            --accent: #667eea;
         }
+
         body.light-mode {
-            --bg: #c8d8f0;
-            --panel-bg: rgba(255, 255, 255, 0.9);
-            --text: #1a1a2e;
-            --text-secondary: #333350;
-            --border: rgba(0, 0, 0, 0.12);
-            --shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --bg: #e9eef7;
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --text: #1a1c2e;
+            --text-secondary: #4a4e6b;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
             --input-bg: rgba(0, 0, 0, 0.03);
             --input-border: rgba(0, 0, 0, 0.2);
             --btn-bg: linear-gradient(135deg, #4a5ac0, #9c3ab0);
@@ -42,24 +47,27 @@
             --tooltip-bg: rgba(255, 255, 255, 0.96);
             --tooltip-text: #1a1a2e;
             --tooltip-loc-gradient: linear-gradient(135deg, #c07000, #b030b0);
-            --info-box-bg: rgba(102, 126, 234, 0.06);
+            --info-box-bg: rgba(102, 126, 234, 0.08);
             --example-bg: rgba(255, 152, 0, 0.08);
-            --table-stripe: rgba(0, 0, 0, 0.02);
+            --table-stripe: rgba(0, 0, 0, 0.03);
             --scrollbar-thumb: rgba(102, 126, 234, 0.35);
             --scrollbar-track: rgba(0, 0, 0, 0.04);
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             overflow: hidden;
             user-select: none;
             transition: background 0.5s;
         }
+
         #canvas {
             display: block;
             position: fixed;
@@ -67,6 +75,7 @@
             left: 0;
             z-index: 1;
         }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -76,73 +85,84 @@
             pointer-events: none;
             z-index: 10;
         }
+
         .header {
             position: absolute;
-            top: 18px;
-            left: 18px;
+            top: 20px;
+            left: 20px;
             background: var(--panel-bg);
-            backdrop-filter: blur(20px);
-            padding: 16px 22px;
-            border-radius: 14px;
+            backdrop-filter: blur(25px);
+            padding: 14px 24px;
+            border-radius: 20px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             pointer-events: auto;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             z-index: 100;
-            transition: background 0.3s, border-color 0.3s;
+            transition: all 0.3s ease;
+            animation: slideDown 0.6s ease-out;
         }
+
         .header h1 {
-            font-size: 1.45em;
+            font-size: 1.5em;
             font-weight: 800;
             background: var(--header-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             white-space: nowrap;
+            letter-spacing: -0.5px;
         }
+
         .header .badge {
             font-size: 0.7em;
             background: rgba(102, 126, 234, 0.2);
             color: var(--text);
-            padding: 5px 10px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-weight: 600;
             letter-spacing: 0.5px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
         }
+
         .theme-btn {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text);
             font-size: 1.1em;
-            padding: 7px 11px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
             background: var(--panel-bg);
         }
+
         .theme-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(102, 126, 234, 0.1);
         }
+
         .sidebar {
             position: absolute;
-            right: 16px;
-            top: 16px;
+            right: 20px;
+            top: 20px;
             width: 340px;
-            max-height: 94vh;
+            max-height: calc(100vh - 40px);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             pointer-events: auto;
             z-index: 100;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-right: 4px;
+            padding-right: 6px;
             scrollbar-width: thin;
             scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
         }
+
         .sidebar::-webkit-scrollbar {
             width: 5px;
         }
@@ -154,137 +174,167 @@
             background: var(--scrollbar-thumb);
             border-radius: 10px;
         }
+
         .panel {
             background: var(--panel-bg);
-            backdrop-filter: blur(20px);
-            padding: 16px 18px;
-            border-radius: 12px;
+            backdrop-filter: blur(25px);
+            padding: 18px 20px;
+            border-radius: 18px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            transition: background 0.3s, border-color 0.3s;
+            transition: all 0.3s ease;
             flex-shrink: 0;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
         }
+
+        .panel:nth-child(1) { animation-delay: 0.1s; }
+        .panel:nth-child(2) { animation-delay: 0.2s; }
+        .panel:nth-child(3) { animation-delay: 0.3s; }
+        .panel:nth-child(4) { animation-delay: 0.4s; }
+        .panel:nth-child(5) { animation-delay: 0.5s; }
+
+        .panel:hover {
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 25px 60px rgba(102, 126, 234, 0.2);
+        }
+
         .panel h3 {
-            font-size: 0.95em;
+            font-size: 1em;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             background: var(--panel-header-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
         .panel h4 {
             font-size: 0.8em;
             font-weight: 700;
             color: var(--text);
-            margin-top: 12px;
+            margin-top: 14px;
             margin-bottom: 6px;
         }
+
         .form-row {
-            margin-bottom: 7px;
+            margin-bottom: 8px;
         }
         .form-row label {
             display: block;
-            font-size: 0.72em;
+            font-size: 0.7em;
             color: var(--text-secondary);
-            margin-bottom: 3px;
+            margin-bottom: 4px;
+            font-weight: 500;
         }
         .form-row input {
             width: 100%;
-            padding: 8px 10px;
+            padding: 10px 12px;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
-            border-radius: 6px;
+            border-radius: 10px;
             color: var(--text);
-            font-size: 0.84em;
+            font-size: 0.85em;
             transition: 0.3s;
+            font-family: inherit;
         }
         .form-row input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
         }
         .form-row small {
-            font-size: 0.68em;
+            font-size: 0.65em;
             color: var(--text-secondary);
             display: block;
-            margin-top: 2px;
+            margin-top: 4px;
+            line-height: 1.4;
         }
+
         .btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: var(--btn-bg);
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 700;
             color: #fff;
             cursor: pointer;
             transition: 0.3s;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
             font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
         }
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(140, 80, 220, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 35px rgba(140, 80, 220, 0.6);
         }
+
         .result-box {
             background: rgba(102, 126, 234, 0.1);
-            padding: 10px 12px;
-            border-radius: 6px;
-            border-left: 3px solid #667eea;
-            margin-top: 10px;
+            padding: 14px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            margin-top: 12px;
             display: none;
             font-size: 0.78em;
             color: var(--text);
-            line-height: 1.5;
+            line-height: 1.6;
+            backdrop-filter: blur(10px);
         }
         .result-box.show {
             display: block;
+            animation: fadeIn 0.3s ease;
         }
+
         .scale-row {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 4px 6px;
+            gap: 10px;
+            padding: 6px 8px;
             font-size: 0.72em;
             color: var(--text);
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .scale-row:hover {
+            background: rgba(255,255,255,0.05);
         }
         .scale-dot {
-            width: 11px;
-            height: 11px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.4);
             flex-shrink: 0;
         }
+
         .eq-list {
             max-height: 180px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
         }
-        .eq-list::-webkit-scrollbar {
-            width: 4px;
-        }
-        .eq-list::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-            border-radius: 8px;
-        }
-        .eq-list::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 8px;
-        }
         .eq-item {
-            padding: 7px 9px;
-            border-radius: 6px;
-            margin-bottom: 3px;
-            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            background: rgba(255, 255, 255, 0.02);
             cursor: pointer;
             font-size: 0.75em;
             transition: 0.2s;
+            border: 1px solid transparent;
         }
         .eq-item:hover {
-            background: rgba(102, 126, 234, 0.15);
-            transform: translateX(3px);
+            background: rgba(102, 126, 234, 0.12);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateX(4px);
         }
         .eq-item .loc {
             font-weight: 600;
@@ -294,21 +344,22 @@
             color: var(--text-secondary);
             font-size: 0.9em;
         }
+
         .tooltip {
             position: fixed;
             pointer-events: none;
             z-index: 200;
             background: var(--tooltip-bg);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 18px;
+            border-radius: 16px;
+            padding: 16px 20px;
             color: var(--tooltip-text);
             font-size: 0.8em;
             opacity: 0;
-            transform: translateY(6px);
+            transform: translateY(8px);
             transition: opacity 0.2s, transform 0.2s;
-            box-shadow: var(--shadow);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
             min-width: 200px;
         }
         .tooltip.visible {
@@ -332,90 +383,97 @@
             font-size: 1.15em;
             color: var(--text);
         }
+
         .bottom-info {
             position: absolute;
-            bottom: 16px;
-            left: 16px;
+            bottom: 20px;
+            left: 20px;
             background: var(--panel-bg);
-            backdrop-filter: blur(15px);
-            padding: 7px 16px;
-            border-radius: 8px;
+            backdrop-filter: blur(25px);
+            padding: 10px 20px;
+            border-radius: 12px;
             border: 1px solid var(--border);
-            font-size: 0.72em;
+            font-size: 0.7em;
             color: var(--text-secondary);
             pointer-events: auto;
             z-index: 100;
+            box-shadow: var(--shadow);
         }
+
         .mode-toggle {
             display: flex;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .mode-btn {
             flex: 1;
-            padding: 7px;
+            padding: 8px;
             border: 1px solid var(--border);
             background: var(--input-bg);
             color: var(--text);
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             text-align: center;
-            font-size: 0.82em;
+            font-size: 0.8em;
             transition: 0.3s;
+            font-weight: 500;
         }
         .mode-btn.active {
             background: rgba(102, 126, 234, 0.25);
-            border-color: #667eea;
+            border-color: var(--accent);
             font-weight: 600;
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.3);
         }
+
         .tabs {
             display: flex;
-            gap: 4px;
-            margin-bottom: 10px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
         .tab-btn {
             flex: 1;
-            padding: 7px 10px;
+            padding: 8px 10px;
             border: 1px solid var(--border);
             background: var(--input-bg);
             color: var(--text);
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 0.78em;
             transition: 0.3s;
-            text-align: center;
             font-weight: 500;
         }
         .tab-btn.active {
             background: rgba(102, 126, 234, 0.25);
-            border-color: #667eea;
+            border-color: var(--accent);
             font-weight: 700;
         }
+
         .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
         }
+
         .info-box-sm {
             background: var(--info-box-bg);
-            border-left: 3px solid #667eea;
-            padding: 8px 10px;
-            margin: 6px 0;
-            border-radius: 4px;
-            font-size: 0.73em;
+            border-left: 4px solid var(--accent);
+            padding: 10px 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 0.7em;
             color: var(--text);
-            line-height: 1.45;
+            line-height: 1.5;
         }
         .example-sm {
             background: var(--example-bg);
-            border-left: 3px solid #ff9800;
-            padding: 7px 10px;
-            margin: 6px 0;
-            font-size: 0.72em;
+            border-left: 4px solid #ff9800;
+            padding: 10px 12px;
+            margin: 8px 0;
+            font-size: 0.7em;
             color: var(--text);
-            line-height: 1.45;
-            border-radius: 4px;
+            line-height: 1.5;
+            border-radius: 8px;
         }
         .range-row {
             display: flex;
@@ -444,24 +502,116 @@
             background: var(--table-stripe);
             font-weight: 600;
         }
-        .checkmark {
-            color: #4CAF50;
-            font-weight: bold;
+
+        .checkmark { color: #4CAF50; font-weight: bold; }
+        .crossmark { color: #F44336; font-weight: bold; }
+
+        .iot-event-list {
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 8px;
+            background: rgba(10, 10, 30, 0.5);
+            border-radius: 12px;
+            color: #ffffff !important;
         }
-        .crossmark {
-            color: #F44336;
-            font-weight: bold;
+        .iot-event-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.8em;
         }
+        .mag-low  { color: #2ecc71 !important; font-weight: bold; }
+        .mag-mid  { color: #f1c40f !important; font-weight: bold; }
+        .mag-high { color: #e74c3c !important; font-weight: bold; }
+        .iot-legend {
+            margin-top: 10px;
+            font-size: 0.65em;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            opacity: 0.85;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 8px;
+        }
+
+        /* Mobile menu */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.3em;
+            padding: 6px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .mobile-menu-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .mobile-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 199;
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+        }
+        .mobile-sidebar-overlay.active {
+            display: block;
+        }
+
         @media (max-width: 900px) {
+            .mobile-menu-btn {
+                display: block;
+            }
             .sidebar {
-                display: none;
+                display: block;
+                position: fixed;
+                right: 0;
+                top: 0;
+                height: 100vh;
+                width: 85vw;
+                max-width: 340px;
+                transform: translateX(100%);
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                margin: 0;
+                border-radius: 20px 0 0 20px;
+                z-index: 200;
+                background: var(--panel-bg);
+                padding: 20px 16px;
+                overflow-y: auto;
+                box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
             }
             .header h1 {
-                font-size: 1.1em;
+                font-size: 1.2em;
             }
             .header .badge {
                 display: none;
             }
+            .bottom-info {
+                display: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -471,31 +621,39 @@
         <div class="tt-loc" id="ttLoc"></div>
         <div class="tt-region" id="ttRegion"></div>
         <div class="tt-mag" id="ttMag"></div>
-        <div id="ttDetail" style="margin-top:4px;"></div>
+        <div id="ttDetail" style="margin-top:6px;"></div>
     </div>
     <div class="overlay">
         <div class="header">
             <h1>🌍 EarthquakeAI</h1>
             <span class="badge">Predict &amp; Learn</span>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <a href="/statistics/" style="color: var(--text); text-decoration: none; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; transition: 0.3s; cursor: pointer;"
-                   onmouseover="this.style.borderColor='#667eea'; this.style.color='#667eea';"
+                <a href="/statistics/" style="color: var(--text); text-decoration: none; padding: 8px 16px; border: 1px solid var(--border); border-radius: 10px; transition: 0.3s; cursor: pointer; font-weight: 500; font-size: 0.9em;"
+                   onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)';"
                    onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text)';">
                     📊 Statistics
                 </a>
                 <button class="theme-btn" id="themeToggle" title="Toggle Day/Night"><i class="fas fa-sun"></i></button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" title="Menu"><i class="fas fa-bars"></i></button>
             </div>
         </div>
 
+        <div class="mobile-sidebar-overlay" id="mobileOverlay"></div>
+
         <div class="sidebar" id="sidebar">
+            <!-- IoT Sensors -->
+            <div class="panel">
+                <h3><i class="fas fa-microchip"></i> IoT Sensors</h3>
+                <div id="iotPanel" class="iot-event-list"></div>
+                <div class="iot-legend">
+                    <span style="color:#2ecc71;">● 0–4 (Low)</span>
+                    <span style="color:#f1c40f;">● 5–9 (Mid)</span>
+                    <span style="color:#e74c3c;">● 10+ (High)</span>
+                </div>
+            </div>
+
             <!-- Display Mode -->
             <div class="panel">
-             <div class="panel">
-                    <h3><i class="fas fa-microchip"></i> IoT Sensors</h3>
-                    <div id="iotPanel" style="font-size: 0.75em; color: var(--text);">
-                        <div style="text-align: center;">Loading sensors...</div>
-                    </div>
-                </div>
                 <h3><i class="fas fa-eye"></i> Display Mode</h3>
                 <div class="mode-toggle">
                     <button class="mode-btn active" id="modeCircles">🔵 Circles</button>
@@ -503,24 +661,29 @@
                 </div>
             </div>
 
-            <!-- Main Panel with Tabs: Predict + Learn -->
+            <!-- Predict + Learn -->
             <div class="panel">
                 <div class="tabs">
                     <button class="tab-btn active" id="tabPredict">⚡ Predict</button>
                     <button class="tab-btn" id="tabLearn">📚 Learn</button>
                 </div>
 
-                <!-- Predict Tab -->
                 <div class="tab-content active" id="contentPredict">
-                    <div class="form-row"><label>Latitude (широта) — between -90 and +90</label>
-                        <input type="number" id="lat" value="41.3" step="0.01" min="-90" max="90"><small>Ташкент=41.3 |
-                            Москва=55.75 | LA=34.05 | Tokyo=35.6 | Sydney=-33.87</small></div>
-                    <div class="form-row"><label>Longitude (долгота) — between -180 and +180</label>
-                        <input type="number" id="lon" value="69.2" step="0.01" min="-180" max="180"><small>Ташкент=69.2 |
-                            Москва=37.6 | LA=-118.2 | Tokyo=139.7 | Sydney=151.21</small></div>
-                    <div class="form-row"><label>Depth (глубина, km) — between 0 and 700</label>
-                        <input type="number" id="depth" value="15" step="1" min="0" max="700"><small>Shallow=0-30 |
-                            Medium=30-100 | Deep=100+</small></div>
+                    <div class="form-row">
+                        <label>Latitude (широта) — between -90 and +90</label>
+                        <input type="number" id="lat" value="41.3" step="0.01" min="-90" max="90">
+                        <small>Ташкент=41.3 | Москва=55.75 | LA=34.05 | Tokyo=35.6 | Sydney=-33.87</small>
+                    </div>
+                    <div class="form-row">
+                        <label>Longitude (долгота) — between -180 and +180</label>
+                        <input type="number" id="lon" value="69.2" step="0.01" min="-180" max="180">
+                        <small>Ташкент=69.2 | Москва=37.6 | LA=-118.2 | Tokyo=139.7 | Sydney=151.21</small>
+                    </div>
+                    <div class="form-row">
+                        <label>Depth (глубина, km) — between 0 and 700</label>
+                        <input type="number" id="depth" value="15" step="1" min="0" max="700">
+                        <small>Shallow=0-30 | Medium=30-100 | Deep=100+</small>
+                    </div>
                     <button class="btn" onclick="predict()"><i class="fas fa-circle-check"></i> Predict Now</button>
                     <div class="result-box" id="resultBox">
                         <div><span>📍 Place:</span> <strong id="resPlace">-</strong></div>
@@ -533,22 +696,16 @@
                     </div>
                 </div>
 
-                <!-- Learn Tab -->
                 <div class="tab-content" id="contentLearn">
                     <h4>🧭 Latitude (широта)</h4>
                     <div class="info-box-sm"><strong>North-south coordinate</strong> — measured from the equator</div>
-                    <div class="range-row"><span>🔴 -90° (South Pole)</span><span>🔵 0° (Equator)</span><span>🟢 +90°
-                            (North Pole)</span></div>
-                    <div class="example-sm">🟡 Tashkent: 41.3°N &nbsp;|&nbsp; 🔴 Moscow: 55.75°N<br>🔵 LA: 34.05°N
-                        &nbsp;|&nbsp; 🟢 Tokyo: 35.6°N<br>🟠 Sydney: -33.87°S</div>
+                    <div class="range-row"><span>🔴 -90° (South Pole)</span><span>🔵 0° (Equator)</span><span>🟢 +90° (North Pole)</span></div>
+                    <div class="example-sm">🟡 Tashkent: 41.3°N &nbsp;|&nbsp; 🔴 Moscow: 55.75°N<br>🔵 LA: 34.05°N &nbsp;|&nbsp; 🟢 Tokyo: 35.6°N<br>🟠 Sydney: -33.87°S</div>
 
                     <h4>🧭 Longitude (долгота)</h4>
-                    <div class="info-box-sm"><strong>East-west coordinate</strong> — from the prime meridian (Greenwich)
-                    </div>
-                    <div class="range-row"><span>🔴 -180° (West)</span><span>🔵 0° (Greenwich)</span><span>🟢 +180°
-                            (East)</span></div>
-                    <div class="example-sm">🟡 Tashkent: 69.2°E &nbsp;|&nbsp; 🔴 Moscow: 37.6°E<br>🔵 LA: -118.2°W ⚠️
-                        &nbsp;|&nbsp; 🟢 Tokyo: 139.7°E<br>🟠 Sydney: 151.21°E</div>
+                    <div class="info-box-sm"><strong>East-west coordinate</strong> — from the prime meridian (Greenwich)</div>
+                    <div class="range-row"><span>🔴 -180° (West)</span><span>🔵 0° (Greenwich)</span><span>🟢 +180° (East)</span></div>
+                    <div class="example-sm">🟡 Tashkent: 69.2°E &nbsp;|&nbsp; 🔴 Moscow: 37.6°E<br>🔵 LA: -118.2°W ⚠️ &nbsp;|&nbsp; 🟢 Tokyo: 139.7°E<br>🟠 Sydney: 151.21°E</div>
 
                     <h4>📏 Depth (глубина)</h4>
                     <div class="info-box-sm"><strong>Hypocenter depth in km</strong> — shallower = more dangerous</div>
@@ -578,21 +735,11 @@
             <!-- Magnitude Scale -->
             <div class="panel">
                 <h3><i class="fas fa-ruler"></i> Magnitude Scale</h3>
-                <div class="scale-row">
-                    <div class="scale-dot" style="background:#4CAF50;"></div> 1-3 Micro
-                </div>
-                <div class="scale-row">
-                    <div class="scale-dot" style="background:#8BC34A;"></div> 3-4 Minor
-                </div>
-                <div class="scale-row">
-                    <div class="scale-dot" style="background:#FFC107;"></div> 4-5 Moderate
-                </div>
-                <div class="scale-row">
-                    <div class="scale-dot" style="background:#FF9800;"></div> 5-6 Strong
-                </div>
-                <div class="scale-row">
-                    <div class="scale-dot" style="background:#F44336;"></div> 6+ Major
-                </div>
+                <div class="scale-row"><div class="scale-dot" style="background:#4CAF50;"></div> 1-3 Micro</div>
+                <div class="scale-row"><div class="scale-dot" style="background:#8BC34A;"></div> 3-4 Minor</div>
+                <div class="scale-row"><div class="scale-dot" style="background:#FFC107;"></div> 4-5 Moderate</div>
+                <div class="scale-row"><div class="scale-dot" style="background:#FF9800;"></div> 5-6 Strong</div>
+                <div class="scale-row"><div class="scale-dot" style="background:#F44336;"></div> 6+ Major</div>
             </div>
 
             <!-- Recent Earthquakes -->
@@ -601,38 +748,67 @@
                 <div class="eq-list" id="eqList">Loading...</div>
             </div>
         </div>
+
         <div class="bottom-info">
-            <i class="fas fa-mouse"></i> Drag to rotate · Scroll to zoom · Hover markers for details · Click list to fly
+            <i class="fas fa-mouse"></i> Drag to rotate · Scroll to zoom · Hover for details · Click list to fly
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-            async function loadIoTData() {
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        });
+        document.getElementById('mobileOverlay').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('mobileOverlay').classList.remove('active');
+        });
+
+        // IoT Panel update
+        async function updateIoTPanel() {
+            const panel = document.getElementById('iotPanel');
+            if (!panel) return;
             try {
-                const resp = await fetch('/api/iot/latest/');
-                const data = await resp.json();
-                const html = data.sensors.slice(0, 5).map(s => `
-                    <div style="padding: 6px; margin: 3px 0; background: rgba(102,126,234,0.1); border-radius: 4px;">
-                        <strong>${s.sensor_id}</strong><br>
-                        🌡️ ${s.temperature}°C | 💧 ${s.humidity}% | 📢 ${s.vibration}<br>
-                        <small>${new Date(s.timestamp).toLocaleTimeString()}</small>
-                    </div>
-                `).join('');
-                document.getElementById('iotPanel').innerHTML = html || 'No data';
-            } catch(e) {
-                console.warn('IoT load error:', e);
+                const response = await fetch('/api/iot/latest/');
+                const data = await response.json();
+                panel.innerHTML = '';
+                const statusClass = data.status === 'online' ? '#2ecc71' : '#e74c3c';
+                panel.innerHTML += `<div style="font-size: 0.7em; margin-bottom: 8px; color: ${statusClass}; font-weight: 500;">
+                    ● ${data.status.toUpperCase()}
+                </div>`;
+                if (data.sensors && data.sensors.length > 0) {
+                    data.sensors.slice(0, 5).forEach(item => {
+                        const val = item.vibration;
+                        const colorClass = val >= 10 ? 'mag-high' : (val >= 5 ? 'mag-mid' : 'mag-low');
+                        const div = document.createElement('div');
+                        div.className = 'iot-event-item';
+                        div.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="${colorClass}" style="font-size: 1.2em;">●</span>
+                                <span class="${colorClass}">${val} баллов</span>
+                                <span style="margin-left: auto; font-size: 0.65em; opacity: 0.7;">
+                                    ${new Date(item.timestamp).toLocaleTimeString()}
+                                </span>
+                            </div>
+                        `;
+                        panel.appendChild(div);
+                    });
+                } else {
+                    panel.innerHTML += '<div style="font-size: 0.75em; opacity: 0.6;">Нет данных</div>';
+                }
+            } catch (err) {
+                panel.innerHTML = '<div style="font-size: 0.75em; color: #e74c3c;">Ошибка загрузки</div>';
             }
         }
+        setInterval(updateIoTPanel, 5000);
+        updateIoTPanel();
 
-        loadIoTData();
-        setInterval(loadIoTData, 10000);  // Обновлять каждые 10 сек
-
+        // Three.js core
         (function() {
-            // ──────────────────────────────────────
-            // THREE.JS SCENE SETUP
-            // ──────────────────────────────────────
             const canvas = document.getElementById('canvas');
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -647,7 +823,6 @@
             sunLight.position.set(5, 3, 5);
             scene.add(ambientLight, sunLight);
 
-            // Stars
             const starsGeo = new THREE.BufferGeometry();
             const starsCount = 2000;
             const starsPos = new Float32Array(starsCount * 3);
@@ -668,192 +843,38 @@
             scene.add(earthGroup);
             const earthGeo = new THREE.SphereGeometry(1, 128, 128);
             const textureLoader = new THREE.TextureLoader();
-
-            // Load textures: color map and normal map for realistic terrain (mountains, ridges)
-            const earthTexture = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-            const earthNormalMap = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-
+            const earthTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+            const earthNormalMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
             const earthMat = new THREE.MeshStandardMaterial({
                 map: earthTexture,
                 normalMap: earthNormalMap,
-                normalScale: new THREE.Vector2(0.9, 0.9), // Amplify relief for visible mountains
+                normalScale: new THREE.Vector2(0.9, 0.9),
                 roughness: 0.7,
                 metalness: 0.05
             });
             const earthMesh = new THREE.Mesh(earthGeo, earthMat);
             earthGroup.add(earthMesh);
 
-            // Regions for border lines and region detection
             const regions = [
-                { name: 'North America', polygon: [
-                        [-130, 50],
-                        [-125, 55],
-                        [-100, 60],
-                        [-70, 55],
-                        [-60, 50],
-                        [-55, 45],
-                        [-65, 40],
-                        [-75, 35],
-                        [-85, 30],
-                        [-100, 28],
-                        [-110, 32],
-                        [-120, 35],
-                        [-125, 42],
-                        [-130, 50]
-                    ] },
-                { name: 'Central America', polygon: [
-                        [-100, 28],
-                        [-85, 30],
-                        [-80, 25],
-                        [-82, 18],
-                        [-90, 15],
-                        [-100, 18],
-                        [-105, 22],
-                        [-100, 28]
-                    ] },
-                { name: 'South America', polygon: [
-                        [-80, 10],
-                        [-70, 12],
-                        [-55, 5],
-                        [-40, -5],
-                        [-35, -10],
-                        [-50, -20],
-                        [-58, -30],
-                        [-65, -35],
-                        [-70, -30],
-                        [-75, -22],
-                        [-80, -10],
-                        [-80, 10]
-                    ] },
-                { name: 'Europe', polygon: [
-                        [-10, 55],
-                        [5, 55],
-                        [15, 52],
-                        [25, 48],
-                        [30, 45],
-                        [35, 42],
-                        [25, 38],
-                        [10, 40],
-                        [-5, 42],
-                        [-10, 48],
-                        [-10, 55]
-                    ] },
-                { name: 'Russia', polygon: [
-                        [30, 55],
-                        [60, 60],
-                        [100, 65],
-                        [140, 60],
-                        [170, 55],
-                        [180, 50],
-                        [160, 45],
-                        [120, 45],
-                        [80, 48],
-                        [40, 50],
-                        [30, 55]
-                    ] },
-                { name: 'East Asia', polygon: [
-                        [100, 45],
-                        [120, 45],
-                        [130, 40],
-                        [140, 38],
-                        [145, 42],
-                        [140, 48],
-                        [120, 50],
-                        [100, 48],
-                        [95, 42],
-                        [100, 38],
-                        [100, 45]
-                    ] },
-                { name: 'Southeast Asia', polygon: [
-                        [95, 20],
-                        [105, 20],
-                        [115, 15],
-                        [125, 10],
-                        [130, 5],
-                        [120, -5],
-                        [110, -5],
-                        [100, 0],
-                        [95, 10],
-                        [95, 20]
-                    ] },
-                { name: 'South Asia', polygon: [
-                        [68, 32],
-                        [75, 30],
-                        [85, 28],
-                        [90, 25],
-                        [88, 20],
-                        [80, 15],
-                        [72, 18],
-                        [68, 24],
-                        [68, 32]
-                    ] },
-                { name: 'Middle East', polygon: [
-                        [35, 40],
-                        [45, 38],
-                        [55, 35],
-                        [60, 28],
-                        [55, 22],
-                        [45, 20],
-                        [35, 25],
-                        [30, 30],
-                        [32, 36],
-                        [35, 40]
-                    ] },
-                { name: 'North Africa', polygon: [
-                        [-15, 32],
-                        [5, 34],
-                        [15, 30],
-                        [30, 28],
-                        [35, 25],
-                        [30, 20],
-                        [10, 18],
-                        [-5, 20],
-                        [-15, 25],
-                        [-15, 32]
-                    ] },
-                { name: 'Sub-Saharan Africa', polygon: [
-                        [-10, 15],
-                        [10, 15],
-                        [25, 10],
-                        [35, 5],
-                        [40, -5],
-                        [35, -15],
-                        [25, -25],
-                        [15, -20],
-                        [5, -5],
-                        [-10, 5],
-                        [-10, 15]
-                    ] },
-                { name: 'Australia', polygon: [
-                        [115, -15],
-                        [135, -15],
-                        [150, -20],
-                        [155, -28],
-                        [145, -35],
-                        [135, -33],
-                        [120, -28],
-                        [113, -22],
-                        [115, -15]
-                    ] },
-                { name: 'Central Asia', polygon: [
-                        [50, 45],
-                        [65, 48],
-                        [80, 48],
-                        [85, 42],
-                        [75, 38],
-                        [60, 40],
-                        [50, 42],
-                        [50, 45]
-                    ] },
+                { name: 'North America', polygon: [[-130,50],[-125,55],[-100,60],[-70,55],[-60,50],[-55,45],[-65,40],[-75,35],[-85,30],[-100,28],[-110,32],[-120,35],[-125,42],[-130,50]] },
+                { name: 'Central America', polygon: [[-100,28],[-85,30],[-80,25],[-82,18],[-90,15],[-100,18],[-105,22],[-100,28]] },
+                { name: 'South America', polygon: [[-80,10],[-70,12],[-55,5],[-40,-5],[-35,-10],[-50,-20],[-58,-30],[-65,-35],[-70,-30],[-75,-22],[-80,-10],[-80,10]] },
+                { name: 'Europe', polygon: [[-10,55],[5,55],[15,52],[25,48],[30,45],[35,42],[25,38],[10,40],[-5,42],[-10,48],[-10,55]] },
+                { name: 'Russia', polygon: [[30,55],[60,60],[100,65],[140,60],[170,55],[180,50],[160,45],[120,45],[80,48],[40,50],[30,55]] },
+                { name: 'East Asia', polygon: [[100,45],[120,45],[130,40],[140,38],[145,42],[140,48],[120,50],[100,48],[95,42],[100,38],[100,45]] },
+                { name: 'Southeast Asia', polygon: [[95,20],[105,20],[115,15],[125,10],[130,5],[120,-5],[110,-5],[100,0],[95,10],[95,20]] },
+                { name: 'South Asia', polygon: [[68,32],[75,30],[85,28],[90,25],[88,20],[80,15],[72,18],[68,24],[68,32]] },
+                { name: 'Middle East', polygon: [[35,40],[45,38],[55,35],[60,28],[55,22],[45,20],[35,25],[30,30],[32,36],[35,40]] },
+                { name: 'North Africa', polygon: [[-15,32],[5,34],[15,30],[30,28],[35,25],[30,20],[10,18],[-5,20],[-15,25],[-15,32]] },
+                { name: 'Sub-Saharan Africa', polygon: [[-10,15],[10,15],[25,10],[35,5],[40,-5],[35,-15],[25,-25],[15,-20],[5,-5],[-10,5],[-10,15]] },
+                { name: 'Australia', polygon: [[115,-15],[135,-15],[150,-20],[155,-28],[145,-35],[135,-33],[120,-28],[113,-22],[115,-15]] },
+                { name: 'Central Asia', polygon: [[50,45],[65,48],[80,48],[85,42],[75,38],[60,40],[50,42],[50,45]] },
             ];
 
             function latLonToVec3(lat, lon, radius) {
                 const phi = (90 - lat) * Math.PI / 180;
                 const theta = (lon + 180) * Math.PI / 180;
-                return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius *
-                    Math.sin(phi) * Math.sin(theta));
+                return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
             }
 
             function interpolateGreatCircle(p1, p2, numPoints = 20) {
@@ -869,8 +890,7 @@
                         const t = i / numPoints;
                         const a = Math.sin((1 - t) * omega) / sinOmega;
                         const b = Math.sin(t * omega) / sinOmega;
-                        points.push(v1.clone().multiplyScalar(a).add(v2.clone().multiplyScalar(b)).normalize()
-                            .multiplyScalar(1.005));
+                        points.push(v1.clone().multiplyScalar(a).add(v2.clone().multiplyScalar(b)).normalize().multiplyScalar(1.005));
                     }
                 }
                 return points;
@@ -894,9 +914,6 @@
                 borderLines.push(line);
             });
 
-            // ──────────────────────────────────────
-            // MARKERS
-            // ──────────────────────────────────────
             const markersGroup = new THREE.Group();
             earthGroup.add(markersGroup);
             const markers = [];
@@ -938,13 +955,12 @@
                     shape.lineTo(0, 0.12);
                     shape.lineTo(0, 0);
                     const flagGeo = new THREE.ShapeGeometry(shape);
-                    const flag = new THREE.Mesh(flagGeo, new THREE.MeshBasicMaterial({ color, side: THREE
-                            .DoubleSide }));
+                    const flag = new THREE.Mesh(flagGeo, new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
                     flag.position.set(0, 0.25, 0);
                     flag.rotation.z = -Math.PI / 2;
                     group.add(flag);
-                    const collider = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), new THREE
-                        .MeshBasicMaterial({ visible: false }));
+                    const collider = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8),
+                        new THREE.MeshBasicMaterial({ visible: false }));
                     collider.position.set(0, 0.35, 0);
                     collider.userData.markerGroup = group;
                     group.add(collider);
@@ -969,10 +985,8 @@
                     const poly = r.polygon;
                     let inside = false;
                     for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-                        const xi = poly[i][0],
-                            yi = poly[i][1];
-                        const xj = poly[j][0],
-                            yj = poly[j][1];
+                        const xi = poly[i][0], yi = poly[i][1];
+                        const xj = poly[j][0], yj = poly[j][1];
                         if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)
                             inside = !inside;
                     }
@@ -981,7 +995,6 @@
             }
 
             let uncertaintyCircle = null;
-
             function createUncertaintyCircle(lat, lon, radiusDeg) {
                 if (uncertaintyCircle) earthGroup.remove(uncertaintyCircle);
                 const points = [];
@@ -999,9 +1012,6 @@
                 earthGroup.add(uncertaintyCircle);
             }
 
-            // ──────────────────────────────────────
-            // PLACE NAME DETECTION
-            // ──────────────────────────────────────
             function getPlaceName(lat, lon) {
                 const places = [
                     { lat: 41.3, lon: 69.2, name: '🟡 Tashkent, Uzbekistan' },
@@ -1033,9 +1043,6 @@
                 return '⚠️ LOW — rarely felt';
             }
 
-            // ──────────────────────────────────────
-            // DATA LOADING
-            // ──────────────────────────────────────
             async function loadEarthquakes() {
                 try {
                     const resp = await fetch('/api/earthquakes/');
@@ -1043,7 +1050,6 @@
                     const eqs = Array.isArray(data) ? data : (data.results || []);
                     processData(eqs);
                 } catch (e) {
-                    console.warn('Using demo data');
                     generateDemo();
                 }
             }
@@ -1052,30 +1058,21 @@
                 clearMarkers();
                 eqs.slice(0, 250).forEach(eq => {
                     const region = findRegion(eq.longitude, eq.latitude);
-                    createMarker(eq.latitude, eq.longitude, eq.magnitude, eq.location || 'Unknown', eq.timestamp, eq
-                        .depth, region?.name || '');
+                    createMarker(eq.latitude, eq.longitude, eq.magnitude, eq.location || 'Unknown', eq.timestamp, eq.depth, region?.name || '');
                 });
                 updateList(eqs);
             }
 
             function generateDemo() {
                 const demo = [
-                    { lat: 41.3, lon: 69.2, mag: 4.2, loc: '10 km NE of Tashkent, Uzbekistan', ts: new Date()
-                            .toISOString(), depth: 15 },
-                    { lat: 37.5, lon: 141.5, mag: 6.1, loc: 'Fukushima, Japan', ts: new Date(Date.now() - 3600000)
-                            .toISOString(), depth: 45 },
-                    { lat: 34.0, lon: -118.0, mag: 3.5, loc: 'Los Angeles, USA', ts: new Date(Date.now() - 7200000)
-                            .toISOString(), depth: 8 },
-                    { lat: -33.5, lon: -72.0, mag: 7.2, loc: 'Valparaíso, Chile', ts: new Date(Date.now() - 10800000)
-                            .toISOString(), depth: 35 },
-                    { lat: 52.0, lon: -169.0, mag: 8.0, loc: 'Aleutian Islands, Alaska', ts: new Date(Date.now() -
-                            21600000).toISOString(), depth: 40 },
-                    { lat: 55.75, lon: 37.6, mag: 2.1, loc: 'Near Moscow, Russia', ts: new Date(Date.now() - 43200000)
-                            .toISOString(), depth: 5 },
-                    { lat: 35.6, lon: 139.7, mag: 5.0, loc: 'Tokyo Bay, Japan', ts: new Date(Date.now() - 86400000)
-                            .toISOString(), depth: 55 },
-                    { lat: -33.87, lon: 151.21, mag: 3.8, loc: 'Sydney Basin, Australia', ts: new Date(Date.now() -
-                            172800000).toISOString(), depth: 10 },
+                    { lat: 41.3, lon: 69.2, mag: 4.2, loc: '10 km NE of Tashkent, Uzbekistan', ts: new Date().toISOString(), depth: 15 },
+                    { lat: 37.5, lon: 141.5, mag: 6.1, loc: 'Fukushima, Japan', ts: new Date(Date.now() - 3600000).toISOString(), depth: 45 },
+                    { lat: 34.0, lon: -118.0, mag: 3.5, loc: 'Los Angeles, USA', ts: new Date(Date.now() - 7200000).toISOString(), depth: 8 },
+                    { lat: -33.5, lon: -72.0, mag: 7.2, loc: 'Valparaíso, Chile', ts: new Date(Date.now() - 10800000).toISOString(), depth: 35 },
+                    { lat: 52.0, lon: -169.0, mag: 8.0, loc: 'Aleutian Islands, Alaska', ts: new Date(Date.now() - 21600000).toISOString(), depth: 40 },
+                    { lat: 55.75, lon: 37.6, mag: 2.1, loc: 'Near Moscow, Russia', ts: new Date(Date.now() - 43200000).toISOString(), depth: 5 },
+                    { lat: 35.6, lon: 139.7, mag: 5.0, loc: 'Tokyo Bay, Japan', ts: new Date(Date.now() - 86400000).toISOString(), depth: 55 },
+                    { lat: -33.87, lon: 151.21, mag: 3.8, loc: 'Sydney Basin, Australia', ts: new Date(Date.now() - 172800000).toISOString(), depth: 10 },
                 ];
                 processData(demo);
             }
@@ -1090,35 +1087,24 @@
                 `).join('') || 'No data';
             }
 
-            // ──────────────────────────────────────
-            // INTERACTION
-            // ──────────────────────────────────────
-            let isDragging = false,
-                prevMouse = { x: 0, y: 0 },
-                targetRotX = 0,
-                targetRotY = 0;
-            const raycaster = new THREE.Raycaster(),
-                mouse = new THREE.Vector2();
+            let isDragging = false, prevMouse = { x: 0, y: 0 }, targetRotX = 0, targetRotY = 0;
+            const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2();
             const tooltip = document.getElementById('tooltip');
             let hoveredMarker = null;
 
-            canvas.addEventListener('mousedown', e => { isDragging = true;
-                prevMouse.x = e.clientX;
-                prevMouse.y = e.clientY; });
+            canvas.addEventListener('mousedown', e => { isDragging = true; prevMouse.x = e.clientX; prevMouse.y = e.clientY; });
             window.addEventListener('mouseup', () => isDragging = false);
             window.addEventListener('mousemove', e => {
                 if (isDragging) {
                     targetRotY += (e.clientX - prevMouse.x) * 0.005;
                     targetRotX += (e.clientY - prevMouse.y) * 0.005;
                     targetRotX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, targetRotX));
-                    prevMouse.x = e.clientX;
-                    prevMouse.y = e.clientY;
+                    prevMouse.x = e.clientX; prevMouse.y = e.clientY;
                 }
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
                 raycaster.setFromCamera(mouse, camera);
-                const testObjects = markers.flatMap(m => markerMode === 'circles' ? [m] : m.children.filter(c => c
-                    .userData.markerGroup));
+                const testObjects = markers.flatMap(m => markerMode === 'circles' ? [m] : m.children.filter(c => c.userData.markerGroup));
                 const intersects = raycaster.intersectObjects(testObjects);
                 if (intersects.length) {
                     const obj = intersects[0].object;
@@ -1135,8 +1121,7 @@
                              Time: ${d.toLocaleTimeString()}<br>
                              Lat: ${data.lat.toFixed(2)}° Lon: ${data.lon.toFixed(2)}°`;
                         tooltip.classList.add('visible');
-                        let tx = e.clientX + 20,
-                            ty = e.clientY - 80;
+                        let tx = e.clientX + 20, ty = e.clientY - 80;
                         if (tx + 220 > window.innerWidth) tx = e.clientX - 240;
                         if (ty < 10) ty = e.clientY + 20;
                         tooltip.style.left = tx + 'px';
@@ -1155,16 +1140,11 @@
 
             window.flyToCoord = (lat, lon) => {
                 targetRotX = -(lat * Math.PI / 180);
-                targetRotY = lon * Math.PI / 180;  // ← БЕЗ МИНУСА!
+                targetRotY = lon * Math.PI / 180;
                 camera.position.z = 2.2;
-                console.log(`🎯 Flying to: lat=${lat}, lon=${lon}`);
             };
-
             window.flyTo = window.flyToCoord;
 
-            // ──────────────────────────────────────
-            // MODE TOGGLES
-            // ──────────────────────────────────────
             document.getElementById('modeCircles').onclick = () => {
                 if (markerMode === 'circles') return;
                 markerMode = 'circles';
@@ -1172,8 +1152,7 @@
                 document.getElementById('modeFlags').classList.remove('active');
                 const eqs = markers.map(m => m.userData);
                 clearMarkers();
-                eqs.forEach(d => createMarker(d.lat, d.lon, d.magnitude, d.location, d.timestamp, d.depth, d
-                    .region));
+                eqs.forEach(d => createMarker(d.lat, d.lon, d.magnitude, d.location, d.timestamp, d.depth, d.region));
             };
             document.getElementById('modeFlags').onclick = () => {
                 if (markerMode === 'flags') return;
@@ -1182,13 +1161,9 @@
                 document.getElementById('modeCircles').classList.remove('active');
                 const eqs = markers.map(m => m.userData);
                 clearMarkers();
-                eqs.forEach(d => createMarker(d.lat, d.lon, d.magnitude, d.location, d.timestamp, d.depth, d
-                    .region));
+                eqs.forEach(d => createMarker(d.lat, d.lon, d.magnitude, d.location, d.timestamp, d.depth, d.region));
             };
 
-            // ──────────────────────────────────────
-            // TAB TOGGLES (Predict / Learn)
-            // ──────────────────────────────────────
             document.getElementById('tabPredict').onclick = () => {
                 document.getElementById('tabPredict').classList.add('active');
                 document.getElementById('tabLearn').classList.remove('active');
@@ -1202,9 +1177,6 @@
                 document.getElementById('contentPredict').classList.remove('active');
             };
 
-            // ──────────────────────────────────────
-            // THEME TOGGLE
-            // ──────────────────────────────────────
             let isNight = true;
             document.getElementById('themeToggle').onclick = () => {
                 isNight = !isNight;
@@ -1216,77 +1188,72 @@
                 borderLines.forEach(l => l.material.color.set(isNight ? 0xffffff : 0x222222));
             };
 
-            // ──────────────────────────────────────
-            // PREDICT FUNCTION (merged validation + API)
-            // ──────────────────────────────────────
             window.predict = async function() {
                 const lat = parseFloat(document.getElementById('lat').value);
                 const lon = parseFloat(document.getElementById('lon').value);
                 const depth = parseFloat(document.getElementById('depth').value);
+                if (isNaN(lat) || lat < -90 || lat > 90) { alert('❌ Latitude must be between -90 and +90'); return; }
+                if (isNaN(lon) || lon < -180 || lon > 180) { alert('❌ Longitude must be between -180 and +180'); return; }
+                if (isNaN(depth) || depth < 0 || depth > 700) { alert('❌ Depth must be between 0 and 700 km'); return; }
 
-                // ── VALIDATION ──
-                if (isNaN(lat) || lat < -90 || lat > 90) {
-                    alert('❌ Latitude must be between -90 and +90');
-                    return;
-                }
-                if (isNaN(lon) || lon < -180 || lon > 180) {
-                    alert('❌ Longitude must be between -180 and +180');
-                    return;
-                }
-                if (isNaN(depth) || depth < 0 || depth > 700) {
-                    alert('❌ Depth must be between 0 and 700 km');
-                    return;
-                }
-
-                // Local info
                 const place = getPlaceName(lat, lon);
                 const depthType = getDepthType(depth);
                 const risk = getRiskLevel(depth);
-
                 document.getElementById('resPlace').textContent = place + ` (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`;
                 document.getElementById('resDepthType').textContent = depthType;
                 document.getElementById('resRisk').textContent = risk;
                 document.getElementById('resultBox').classList.add('show');
 
-                // ── API CALL ──
                 try {
+                    // Получаем CSRF токен
+                    const getCookie = (name) => {
+                        let cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            const cookies = document.cookie.split(';');
+                            for (let i = 0; i < cookies.length; i++) {
+                                const cookie = cookies[i].trim();
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    };
+
+                    const csrftoken = getCookie('csrftoken');
+
                     const resp = await fetch('/api/vibration/', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
                         body: JSON.stringify({ latitude: lat, longitude: lon, depth: depth })
                     });
+
                     if (!resp.ok) throw new Error('Prediction failed');
                     const data = await resp.json();
-                    document.getElementById('resMagRange').textContent =
-                        `M ${data.lower_magnitude.toFixed(1)} – ${data.upper_magnitude.toFixed(1)}`;
+                    document.getElementById('resMagRange').textContent = `M ${data.lower_magnitude.toFixed(1)} – ${data.upper_magnitude.toFixed(1)}`;
                     document.getElementById('resConf').textContent = (data.confidence * 100).toFixed(1) + '%';
                     document.getElementById('resUncert').textContent = `±${data.location_uncertainty.toFixed(2)}°`;
                     document.getElementById('resNearby').textContent = data.nearby_quakes_count;
                     createUncertaintyCircle(lat, lon, data.location_uncertainty);
                     const region = findRegion(lon, lat);
-                    createMarker(lat, lon, data.predicted_magnitude,
-                        `Predicted: ${region ? region.name : 'Ocean'}`, new Date().toISOString(), depth, region
-                        ?.name || '');
+                    createMarker(lat, lon, data.predicted_magnitude, `Predicted: ${region ? region.name : 'Ocean'}`, new Date().toISOString(), depth, region?.name || '');
                     window.flyToCoord(lat, lon);
                 } catch (err) {
                     document.getElementById('resMagRange').textContent = 'API unavailable';
                     document.getElementById('resConf').textContent = 'N/A';
                     document.getElementById('resUncert').textContent = 'N/A';
                     document.getElementById('resNearby').textContent = 'N/A';
-                    console.warn('API error:', err.message);
                     const region = findRegion(lon, lat);
-                    const estimatedMag = depth < 30 ? 4.5 + Math.random() * 2.5 : depth < 100 ? 3.5 + Math.random() *
-                        2 : 2 + Math.random() * 2;
-                    createMarker(lat, lon, estimatedMag,
-                        `Estimated: ${region ? region.name : 'Ocean'} (offline)`, new Date().toISOString(), depth,
-                        region?.name || '');
+                    const estimatedMag = depth < 30 ? 4.5 + Math.random() * 2.5 : depth < 100 ? 3.5 + Math.random() * 2 : 2 + Math.random() * 2;
+                    createMarker(lat, lon, estimatedMag, `Estimated: ${region ? region.name : 'Ocean'} (offline)`, new Date().toISOString(), depth, region?.name || '');
                     window.flyToCoord(lat, lon);
                 }
             };
 
-            // ──────────────────────────────────────
-            // ANIMATION LOOP
-            // ──────────────────────────────────────
             function animate() {
                 requestAnimationFrame(animate);
                 earthGroup.rotation.x += (targetRotX - earthGroup.rotation.x) * 0.1;
@@ -1300,9 +1267,6 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            // ──────────────────────────────────────
-            // INIT
-            // ──────────────────────────────────────
             loadEarthquakes();
             setInterval(loadEarthquakes, 45000);
             animate();
