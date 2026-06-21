@@ -2,15 +2,72 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework import status
 from datetime import datetime
-import json
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework.response import Response
+
+import threading
+
+from django.http import StreamingHttpResponse
+import queue
+import json
+
 
 from .models import IoTSensorData
 from .ml_model import EarthquakePredictor
 
 predictor = EarthquakePredictor()
+
+# Глобальная очередь для broadcast alerts
+alert_queue = queue.Queue(maxsize=100)
+
+
+def broadcast_alert(message):
+    """Отправляет alert всем подписчикам"""
+    try:
+        alert_queue.put_nowait(json.dumps(message))
+    except queue.Full:
+        pass
+
+
+def iot_alerts_stream(request):
+    """SSE endpoint без DRF"""
+
+    if request.method != 'GET':
+        return StreamingHttpResponse({'error': 'Method not allowed'}, status=405)
+
+    def event_generator():
+        client_queue = queue.Queue()
+        yield f"data: {json.dumps({'type': 'connected'})}\n\n"
+
+        def relay_alerts():
+            while True:
+                try:
+                    msg = alert_queue.get(timeout=30)
+                    try:
+                        client_queue.put_nowait(msg)
+                    except:
+                        pass
+                except queue.Empty:
+                    pass
+
+        relay_thread = threading.Thread(target=relay_alerts, daemon=True)
+        relay_thread.start()
+
+        try:
+            while True:
+                try:
+                    msg = client_queue.get(timeout=30)
+                    yield f"data: {msg}\n\n"
+                except queue.Empty:
+                    yield f": heartbeat\n\n"
+        except GeneratorExit:
+            pass
+
+    response = StreamingHttpResponse(event_generator(), content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+    return response
 
 @api_view(['GET'])
 def iot_latest_data(request):
@@ -30,7 +87,7 @@ def iot_latest_data(request):
         vib_value = d.vibration_intensity if d.vibration_intensity is not None else d.vibration_count
         data.append({
             'sensor_id': d.sensor_id,
-            'vibration': vib_value,            # теперь это баллы 0-20
+            'vibration': vib_value,  # теперь это баллы 0-20
             'location': d.location_name,
             'timestamp': d.sensor_timestamp.isoformat(),
             'battery': d.battery_level,
@@ -39,11 +96,13 @@ def iot_latest_data(request):
     return Response({
         "status": "online" if is_online else "offline",
         "sensors": data,
-        "last_vibration": latest.vibration_intensity if latest and latest.vibration_intensity is not None else (latest.vibration_count if latest else 0),
+        "last_vibration": latest.vibration_intensity if latest and latest.vibration_intensity is not None else (
+            latest.vibration_count if latest else 0),
         "location": latest.location_name if latest else "N/A"
     })
 
-@csrf_exempt
+
+
 @api_view(['POST'])
 def iot_sensor_endpoint(request):
     """
@@ -77,27 +136,42 @@ def iot_sensor_endpoint(request):
             'vibration': sensor_data.vibration_count,
         }
 
-        # Логика предсказания при высокой вибрации
-        if sensor_data.vibration_count > 10 and sensor_data.latitude and sensor_data.longitude:
-            try:
-                features = EarthquakePredictor.compute_features(
-                    sensor_data.latitude, sensor_data.longitude, 10.0
-                )
-                predicted_mag, confidence, lower_mag, upper_mag = predictor.predict(features)
+        # ⚡ SEND ALERT IF VIBRATION IS HIGH
+        vibration = sensor_data.vibration_intensity or sensor_data.vibration_count
+        if vibration and vibration > 5:  # Threshold: 5+ баллов
+            alert_msg = {
+                'type': 'earthquake',
+                'vibration': vibration,
+                'sensor_id': sensor_data.sensor_id,
+                'location': sensor_data.location_name or 'Unknown',
+                'timestamp': sensor_timestamp.isoformat(),
+                'battery': sensor_data.battery_level,
+                'lat': sensor_data.latitude,
+                'lon': sensor_data.longitude,
+            }
 
-                response_data['prediction'] = {
-                    'magnitude': predicted_mag,
-                    'confidence': confidence
-                }
-            except Exception as e:
-                print(f"⚠️  Prediction error: {e}")
+            # Логика предсказания при высокой вибрации
+            if vibration > 10 and sensor_data.latitude and sensor_data.longitude:
+                try:
+                    features = EarthquakePredictor.compute_features(
+                        sensor_data.latitude, sensor_data.longitude, 10.0
+                    )
+                    predicted_mag, confidence, lower_mag, upper_mag = predictor.predict(features)
+                    alert_msg['prediction'] = {
+                        'magnitude': round(predicted_mag, 1),
+                        'confidence': round(confidence, 2),
+                    }
+                except Exception as e:
+                    print(f"⚠️  Prediction error: {e}")
+
+            # Broadcast alert к всем клиентам
+            broadcast_alert(alert_msg)
+            response_data['alert_sent'] = True
 
         return Response(response_data, status=status.HTTP_201_CREATED)
 
     except Exception as e:
         return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 @api_view(['GET'])
