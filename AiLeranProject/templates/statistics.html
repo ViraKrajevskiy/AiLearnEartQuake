@@ -38,12 +38,7 @@
             --scrollbar-track: rgba(0, 0, 0, 0.04);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
@@ -54,357 +49,124 @@
             scroll-behavior: smooth;
             overflow-x: hidden;
         }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 10px;
-        }
-
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+        .container { max-width: 1440px; margin: 0 auto; }
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 30px;
-            padding: 24px 30px;
-            background: var(--glass);
-            backdrop-filter: blur(18px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+            margin-bottom: 30px; padding: 24px 30px;
+            background: var(--glass); backdrop-filter: blur(18px);
+            border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow);
             animation: fadeSlideDown 0.6s ease-out;
         }
-
         .header h1 {
-            font-size: 2.2em;
-            font-weight: 800;
+            font-size: 2.2em; font-weight: 800;
             background: linear-gradient(135deg, #667eea, #f093fb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-            margin-right: auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            letter-spacing: -0.5px; margin-right: auto;
         }
-
-        .nav-buttons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
+        .nav-buttons { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .btn {
-            padding: 12px 24px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.95em;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.35);
-            white-space: nowrap;
+            padding: 12px 24px; background: var(--accent); color: white; border: none;
+            border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95em;
+            transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.35); white-space: nowrap;
         }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 28px rgba(102, 126, 234, 0.5);
-        }
-
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(102, 126, 234, 0.5); }
         .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--border);
-            box-shadow: none;
-            color: var(--text);
-            backdrop-filter: blur(8px);
+            background: transparent; border: 1px solid var(--border); box-shadow: none;
+            color: var(--text); backdrop-filter: blur(8px);
         }
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(102, 126, 234, 0.1);
-        }
-
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: rgba(102, 126, 234, 0.1); }
         .theme-btn, .lang-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-size: 1.2em;
-            padding: 10px 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            background: transparent; border: 1px solid var(--border); color: var(--text);
+            font-size: 1.2em; padding: 10px 14px; border-radius: 12px; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; gap: 8px;
         }
-        .theme-btn:hover, .lang-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(102, 126, 234, 0.08);
-        }
-
+        .theme-btn:hover, .lang-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(102, 126, 234, 0.08); }
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 20px;
-            margin-bottom: 35px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px; margin-bottom: 35px;
         }
-
         .stat-card {
-            background: var(--glass);
-            backdrop-filter: blur(18px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px 20px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: var(--shadow);
-            animation: fadeInUp 0.5s ease forwards;
-            opacity: 0;
+            background: var(--glass); backdrop-filter: blur(18px);
+            border: 1px solid var(--border); border-radius: 20px; padding: 24px 20px;
+            text-align: center; transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: var(--shadow); animation: fadeInUp 0.5s ease forwards; opacity: 0;
         }
         .stat-card:nth-child(1) { animation-delay: 0.1s; }
         .stat-card:nth-child(2) { animation-delay: 0.2s; }
         .stat-card:nth-child(3) { animation-delay: 0.3s; }
         .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-        .stat-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 30px 60px rgba(102, 126, 234, 0.25);
-            border-color: rgba(102, 126, 234, 0.4);
-        }
-
-        .stat-icon {
-            font-size: 2.8em;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 6px 10px rgba(102, 126, 234, 0.3));
-        }
-
-        .stat-label {
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
-        }
-
+        .stat-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(102, 126, 234, 0.25); border-color: rgba(102, 126, 234, 0.4); }
+        .stat-icon { font-size: 2.8em; margin-bottom: 12px; filter: drop-shadow(0 6px 10px rgba(102, 126, 234, 0.3)); }
+        .stat-label { font-size: 0.85em; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
         .stat-value {
-            font-size: 2.4em;
-            font-weight: 800;
+            font-size: 2.4em; font-weight: 800;
             background: linear-gradient(135deg, var(--accent), var(--accent-alt));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
             line-height: 1.2;
         }
-
         .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 20px;
-            margin-bottom: 35px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px; margin-bottom: 35px;
         }
-
         .chart-card {
-            background: var(--glass);
-            backdrop-filter: blur(18px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 22px 22px 15px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
-            animation: fadeInUp 0.5s ease forwards;
-            opacity: 0;
+            background: var(--glass); backdrop-filter: blur(18px);
+            border: 1px solid var(--border); border-radius: 20px; padding: 22px 22px 15px;
+            box-shadow: var(--shadow); transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.5s ease forwards; opacity: 0;
         }
         .chart-card:nth-child(1) { animation-delay: 0.2s; }
         .chart-card:nth-child(2) { animation-delay: 0.3s; }
         .chart-card:nth-child(3) { animation-delay: 0.4s; }
         .chart-card:nth-child(4) { animation-delay: 0.5s; }
-
-        .chart-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.5);
-        }
-
-        .chart-card h3 {
-            margin-bottom: 15px;
-            font-weight: 700;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text);
-        }
-
-        .chart-container {
-            position: relative;
-            height: 320px;
-        }
-
+        .chart-card:nth-child(5) { animation-delay: 0.6s; }
+        .chart-card:hover { transform: translateY(-4px); box-shadow: 0 25px 55px rgba(0, 0, 0, 0.5); }
+        .chart-card h3 { margin-bottom: 15px; font-weight: 700; font-size: 1.2em; display: flex; align-items: center; gap: 8px; color: var(--text); }
+        .chart-container { position: relative; height: 320px; }
         .table-card {
-            background: var(--glass);
-            backdrop-filter: blur(18px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: var(--shadow);
-            overflow-x: auto;
-            animation: fadeInUp 0.5s ease 0.6s forwards;
-            opacity: 0;
+            background: var(--glass); backdrop-filter: blur(18px);
+            border: 1px solid var(--border); border-radius: 20px; padding: 22px;
+            box-shadow: var(--shadow); overflow-x: auto;
+            animation: fadeInUp 0.5s ease 0.6s forwards; opacity: 0;
         }
-
-        .table-card h3 {
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-            min-width: 600px;
-        }
-
-        th {
-            background: rgba(102, 126, 234, 0.12);
-            padding: 14px 12px;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid var(--border);
-            color: var(--text);
-        }
-
-        td {
-            padding: 14px 12px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        tr:hover td {
-            background: var(--hover-light);
-        }
-
-        .mag-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            color: white;
-            font-size: 0.85em;
-        }
+        .table-card h3 { margin-bottom: 15px; font-weight: 700; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; min-width: 600px; }
+        th { background: rgba(102, 126, 234, 0.12); padding: 14px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); color: var(--text); }
+        td { padding: 14px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+        tr:hover td { background: var(--hover-light); }
+        .mag-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 700; color: white; font-size: 0.85em; }
         .mag-1 { background: #4CAF50; }
         .mag-2 { background: #8BC34A; }
         .mag-3 { background: #FFC107; color: #1a1a2e; }
         .mag-4 { background: #FF9800; }
         .mag-5 { background: #F44336; }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-secondary);
-        }
-        .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeSlideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Mobile optimization */
+        .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+        .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .header {
-                padding: 20px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .header h1 {
-                font-size: 1.8em;
-            }
-            .nav-buttons {
-                width: 100%;
-                justify-content: flex-start;
-            }
-            .btn {
-                padding: 10px 16px;
-                font-size: 0.85em;
-            }
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            .stat-card {
-                padding: 20px 15px;
-            }
-            .stat-value {
-                font-size: 2em;
-            }
-            .chart-container {
-                height: 280px;
-            }
+            body { padding: 10px; }
+            .header { padding: 20px; flex-direction: column; align-items: flex-start; }
+            .header h1 { font-size: 1.8em; }
+            .nav-buttons { width: 100%; justify-content: flex-start; }
+            .btn { padding: 10px 16px; font-size: 0.85em; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .stat-card { padding: 20px 15px; }
+            .stat-value { font-size: 2em; }
+            .chart-container { height: 280px; }
         }
-
         @media (max-width: 500px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .stat-icon {
-                font-size: 2.2em;
-            }
-            .stat-label {
-                font-size: 0.75em;
-            }
-            .header h1 {
-                font-size: 1.5em;
-            }
-            .theme-btn, .lang-btn {
-                padding: 8px 10px;
-                font-size: 1em;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .stat-icon { font-size: 2.2em; }
+            .stat-label { font-size: 0.75em; }
+            .header h1 { font-size: 1.5em; }
+            .theme-btn, .lang-btn { padding: 8px 10px; font-size: 1em; }
         }
     </style>
 </head>
@@ -461,6 +223,11 @@
                 <h3 id="chartTitleRegion"><i class="fas fa-globe-americas" style="color: #4caf50;"></i> Top Regions</h3>
                 <div class="chart-container"><canvas id="regionChart"></canvas></div>
             </div>
+            <!-- НОВАЯ КАРТОЧКА ДЛЯ IOT ДАТЧИКА -->
+            <div class="chart-card">
+                <h3 id="chartTitleIot"><i class="fas fa-microchip" style="color: #ff9800;"></i> ESP32 Vibration (Real-time)</h3>
+                <div class="chart-container"><canvas id="iotChart"></canvas></div>
+            </div>
         </div>
 
         <div class="table-card">
@@ -498,6 +265,7 @@
                 chartDepth: 'Depth Distribution',
                 chartTime: 'Earthquakes Over Time (7 days)',
                 chartRegion: 'Top Regions',
+                chartIot: 'ESP32 Vibration (Real-time)',
                 tableTitle: '🔥 Strongest Earthquakes (Last 30 days)',
                 thLocation: 'Location',
                 thMagnitude: 'Magnitude',
@@ -512,6 +280,7 @@
                 count: 'Count',
                 magLabels: ['1-2', '2-3', '3-4', '4-5', '5-6', '6+'],
                 depthLabels: ['0-30', '30-70', '70-100', '100+'],
+                iotVibration: 'Vibration',
             },
             ru: {
                 pageTitle: '📊 Статистика землетрясений',
@@ -525,6 +294,7 @@
                 chartDepth: 'Распределение глубин',
                 chartTime: 'Землетрясения за 7 дней',
                 chartRegion: 'Топ регионов',
+                chartIot: 'Датчик ESP32 (вибрация, реал. время)',
                 tableTitle: '🔥 Сильнейшие землетрясения (30 дней)',
                 thLocation: 'Местоположение',
                 thMagnitude: 'Магнитуда',
@@ -539,11 +309,13 @@
                 count: 'Кол-во',
                 magLabels: ['1-2', '2-3', '3-4', '4-5', '5-6', '6+'],
                 depthLabels: ['0-30', '30-70', '70-100', '100+'],
+                iotVibration: 'Вибрация',
             }
         };
 
         let currentLang = localStorage.getItem('earthquakeai_lang') || 'en';
         let charts = {};
+        let iotHistory = []; // массив { time: Date, value: number }
 
         // ---------- UI UPDATE ONLY ----------
         function applyLanguage(lang) {
@@ -561,6 +333,7 @@
             document.getElementById('chartTitleDepth').innerHTML = `<i class="fas fa-water" style="color: #f093fb;"></i> ${t.chartDepth}`;
             document.getElementById('chartTitleTime').innerHTML = `<i class="fas fa-calendar-alt" style="color: #ffc107;"></i> ${t.chartTime}`;
             document.getElementById('chartTitleRegion').innerHTML = `<i class="fas fa-globe-americas" style="color: #4caf50;"></i> ${t.chartRegion}`;
+            document.getElementById('chartTitleIot').innerHTML = `<i class="fas fa-microchip" style="color: #ff9800;"></i> ${t.chartIot}`;
 
             document.getElementById('tableTitle').textContent = t.tableTitle;
             document.getElementById('thLocation').textContent = t.thLocation;
@@ -572,7 +345,6 @@
             const loadingSpan = document.querySelector('#topEqTable .loading span');
             if (loadingSpan) loadingSpan.textContent = t.loading;
 
-            // Instead of recreating charts, just update labels and colors
             updateChartLabelsAndColors(lang);
         }
 
@@ -581,7 +353,6 @@
             const textColor = getTextColor();
             const gridColor = getGridColor();
 
-            // Magnitude chart
             if (charts.mag) {
                 charts.mag.data.datasets[0].label = t.events;
                 charts.mag.options.plugins.legend.labels.color = textColor;
@@ -591,12 +362,10 @@
                 charts.mag.options.scales.y.grid.color = gridColor;
                 charts.mag.update();
             }
-            // Depth chart
             if (charts.depth) {
                 charts.depth.options.plugins.legend.labels.color = textColor;
                 charts.depth.update();
             }
-            // Time chart
             if (charts.time) {
                 charts.time.data.datasets[0].label = t.quakes;
                 charts.time.options.plugins.legend.labels.color = textColor;
@@ -606,7 +375,6 @@
                 charts.time.options.scales.y.grid.color = gridColor;
                 charts.time.update();
             }
-            // Region chart
             if (charts.region) {
                 charts.region.data.datasets[0].label = t.count;
                 charts.region.options.plugins.legend.labels.color = textColor;
@@ -615,6 +383,15 @@
                 charts.region.options.scales.x.grid.color = gridColor;
                 charts.region.options.scales.y.grid.color = gridColor;
                 charts.region.update();
+            }
+            if (charts.iot) {
+                charts.iot.data.datasets[0].label = t.iotVibration;
+                charts.iot.options.plugins.legend.labels.color = textColor;
+                charts.iot.options.scales.x.ticks.color = textColor;
+                charts.iot.options.scales.y.ticks.color = textColor;
+                charts.iot.options.scales.x.grid.color = gridColor;
+                charts.iot.options.scales.y.grid.color = gridColor;
+                charts.iot.update();
             }
         }
 
@@ -678,7 +455,6 @@
             const textColor = getTextColor();
             const gridColor = getGridColor();
 
-            // Destroy previous charts
             Object.values(charts).forEach(chart => {
                 if (chart && typeof chart.destroy === 'function') chart.destroy();
             });
@@ -822,6 +598,81 @@
                     }
                 });
             }
+
+            initIotChart();
+        }
+
+        function initIotChart() {
+            if (charts.iot) return;
+            const ctx = document.getElementById('iotChart');
+            if (!ctx) return;
+            const t = translations[currentLang];
+            const textColor = getTextColor();
+            const gridColor = getGridColor();
+
+            const now = Date.now();
+            iotHistory = [];
+            for (let i = 29; i >= 0; i--) {
+                iotHistory.push({ time: new Date(now - i * 5000), value: 0 }); // каждые 5 сек за последние 2.5 мин
+            }
+
+            charts.iot = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: iotHistory.map(p => p.time.toLocaleTimeString()),
+                    datasets: [{
+                        label: t.iotVibration,
+                        data: iotHistory.map(p => p.value),
+                        borderColor: '#ff9800',
+                        backgroundColor: 'rgba(255,152,0,0.2)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#ff9800',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: textColor } }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textColor, maxTicksLimit: 6 },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function updateIotChart() {
+            try {
+                const resp = await fetch('/api/iot/latest/');
+                const data = await resp.json();
+                let vibration = 0;
+                if (data.sensors && data.sensors.length > 0) {
+                    vibration = data.sensors[0].vibration || 0;
+                }
+
+                const now = new Date();
+                iotHistory.push({ time: now, value: vibration });
+                if (iotHistory.length > 30) iotHistory.shift();
+
+                if (charts.iot) {
+                    charts.iot.data.labels = iotHistory.map(p => p.time.toLocaleTimeString());
+                    charts.iot.data.datasets[0].data = iotHistory.map(p => p.value);
+                    charts.iot.update();
+                }
+            } catch (e) {
+                console.warn('IoT update error:', e);
+            }
         }
 
         function populateTable(eqs) {
@@ -840,7 +691,12 @@
 
         applyLanguage(currentLang);
         loadData();
+        initIotChart();
+        updateIotChart();
+
         setInterval(loadData, 60000);
+
+        setInterval(updateIotChart, 5000);
     </script>
 </body>
 </html>
