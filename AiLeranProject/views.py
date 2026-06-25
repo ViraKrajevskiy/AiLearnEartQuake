@@ -20,13 +20,24 @@ class EarthquakeViewSet(viewsets.ModelViewSet):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class VibrationAPIView(APIView):
+    """
+    POST /api/vibration/
+    Endpoint для предсказания магнитуды землетрясения
+
+    """
+
     def post(self, request):
         try:
             latitude = float(request.data.get('latitude'))
             longitude = float(request.data.get('longitude'))
-            depth = float(request.data.get('depth', 10.0))
 
-            # Валидация
+            #  ОБРАБОТКА DEPTH
+            try:
+                depth = float(request.data.get('depth', 10.0))
+            except (ValueError, TypeError):
+                depth = 10.0
+
+            # Валидация координат
             if latitude < -90 or latitude > 90:
                 return Response(
                     {'error': 'Latitude must be between -90 and 90'},
@@ -37,13 +48,15 @@ class VibrationAPIView(APIView):
                     {'error': 'Longitude must be between -180 and 180'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            # ВАЛИДАЦИЯ DEPTH
             if depth < 0 or depth > 700:
                 return Response(
                     {'error': 'Depth must be between 0 and 700 km'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Вычисляем признаки (правильный способ)
+            # Вычисляем признаки (с правильным depth)
             features = EarthquakePredictor.compute_features(latitude, longitude, depth)
 
             # Предсказываем
@@ -68,7 +81,7 @@ class VibrationAPIView(APIView):
                 'upper_magnitude': upper_mag,
                 'location_uncertainty': location_uncertainty,
                 'nearby_quakes_count': features[0],
-                'depth': depth,
+                'depth': depth,  #  ВОЗВРАЩАЕМ ПРАВИЛЬНЫЙ DEPTH
                 'time_since_last_big': features[2],
                 'is_model_trained': predictor.is_trained
             }, status=status.HTTP_201_CREATED)
@@ -83,12 +96,15 @@ class VibrationAPIView(APIView):
                 {'error': f'Prediction error: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
 def stats_page(request):
     return render(request, 'statistics.html')
 
 
 def index(request):
     return render(request, 'index.html')
+
 
 def about_page(request):
     return render(request, 'about.html')

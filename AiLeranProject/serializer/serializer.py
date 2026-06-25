@@ -15,7 +15,6 @@ class PredictionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# ✅ НОВЫЙ СЕРИАЛИЗАТОР
 class IoTSensorDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = IoTSensorData
@@ -24,14 +23,16 @@ class IoTSensorDataSerializer(serializers.ModelSerializer):
             'sensor_id',
             'latitude',
             'longitude',
+            'depth',
             'location_name',
-            'temperature',
-            'humidity',
             'vibration_count',
             'vibration_intensity',
             'signal_strength',
             'battery_level',
+            'client_ip',
+            'country',
+            'country_code',
             'sensor_timestamp',
             'received_at',
         ]
-        read_only_fields = ['id', 'received_at']
+        read_only_fields = ['id', 'received_at', 'client_ip', 'country', 'country_code']  # ✅ ОБНОВЛЕНО

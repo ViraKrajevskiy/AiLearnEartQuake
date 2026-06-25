@@ -43,11 +43,12 @@ class Prediction(models.Model):
         return f"Pred: {self.predicted_magnitude} (confidence: {self.confidence})"
 
 
-# ✅ НОВАЯ МОДЕЛЬ ДЛЯ IOT ДАТЧИКОВ
+# НОВАЯ МОДЕЛЬ ДЛЯ IOT ДАТЧИКОВ (ОБНОВЛЕННАЯ)
 class IoTSensorData(models.Model):
     sensor_id = models.CharField(max_length=50, default="ESP32-01")
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    depth = models.FloatField(default=10.0, null=True, blank=True)  # ✅ ДОБАВЛЕНО
 
     vibration_intensity = models.FloatField(null=True, blank=True)
     location_name = models.CharField(max_length=255, null=True, blank=True)
@@ -56,9 +57,17 @@ class IoTSensorData(models.Model):
     signal_strength = models.IntegerField(null=True, blank=True)
     battery_level = models.IntegerField(null=True, blank=True)
 
+    # НОВЫЕ ПОЛЯ ДЛЯ GEO-INFORMATION
+    client_ip = models.GenericIPAddressField(null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    country_code = models.CharField(max_length=2, null=True, blank=True)  # ISO 3166-1 alpha-2
+
     sensor_timestamp = models.DateTimeField()
     received_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-sensor_timestamp']
         indexes = [models.Index(fields=['-sensor_timestamp'])]
+
+    def __str__(self):
+        return f"{self.sensor_id} - {self.country or 'Unknown'} ({self.vibration_intensity})"
