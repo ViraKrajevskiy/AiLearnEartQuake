@@ -122,7 +122,6 @@
         .chart-card:nth-child(2) { animation-delay: 0.3s; }
         .chart-card:nth-child(3) { animation-delay: 0.4s; }
         .chart-card:nth-child(4) { animation-delay: 0.5s; }
-        .chart-card:nth-child(5) { animation-delay: 0.6s; }
         .chart-card:hover { transform: translateY(-4px); box-shadow: 0 25px 55px rgba(0, 0, 0, 0.5); }
         .chart-card h3 { margin-bottom: 15px; font-weight: 700; font-size: 1.2em; display: flex; align-items: center; gap: 8px; color: var(--text); }
         .chart-container { position: relative; height: 320px; }
@@ -130,7 +129,7 @@
             background: var(--glass); backdrop-filter: blur(18px);
             border: 1px solid var(--border); border-radius: 20px; padding: 22px;
             box-shadow: var(--shadow); overflow-x: auto;
-            animation: fadeInUp 0.5s ease 0.6s forwards; opacity: 0;
+            animation: fadeInUp 0.5s ease 0.5s forwards; opacity: 0;
         }
         .table-card h3 { margin-bottom: 15px; font-weight: 700; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -223,11 +222,6 @@
                 <h3 id="chartTitleRegion"><i class="fas fa-globe-americas" style="color: #4caf50;"></i> Top Regions</h3>
                 <div class="chart-container"><canvas id="regionChart"></canvas></div>
             </div>
-            <!-- НОВАЯ КАРТОЧКА ДЛЯ IOT ДАТЧИКА -->
-            <div class="chart-card">
-                <h3 id="chartTitleIot"><i class="fas fa-microchip" style="color: #ff9800;"></i> ESP32 Vibration (Real-time)</h3>
-                <div class="chart-container"><canvas id="iotChart"></canvas></div>
-            </div>
         </div>
 
         <div class="table-card">
@@ -265,7 +259,6 @@
                 chartDepth: 'Depth Distribution',
                 chartTime: 'Earthquakes Over Time (7 days)',
                 chartRegion: 'Top Regions',
-                chartIot: 'ESP32 Vibration (Real-time)',
                 tableTitle: '🔥 Strongest Earthquakes (Last 30 days)',
                 thLocation: 'Location',
                 thMagnitude: 'Magnitude',
@@ -280,7 +273,6 @@
                 count: 'Count',
                 magLabels: ['1-2', '2-3', '3-4', '4-5', '5-6', '6+'],
                 depthLabels: ['0-30', '30-70', '70-100', '100+'],
-                iotVibration: 'Vibration',
             },
             ru: {
                 pageTitle: '📊 Статистика землетрясений',
@@ -294,7 +286,6 @@
                 chartDepth: 'Распределение глубин',
                 chartTime: 'Землетрясения за 7 дней',
                 chartRegion: 'Топ регионов',
-                chartIot: 'Датчик ESP32 (вибрация, реал. время)',
                 tableTitle: '🔥 Сильнейшие землетрясения (30 дней)',
                 thLocation: 'Местоположение',
                 thMagnitude: 'Магнитуда',
@@ -309,15 +300,12 @@
                 count: 'Кол-во',
                 magLabels: ['1-2', '2-3', '3-4', '4-5', '5-6', '6+'],
                 depthLabels: ['0-30', '30-70', '70-100', '100+'],
-                iotVibration: 'Вибрация',
             }
         };
 
         let currentLang = localStorage.getItem('earthquakeai_lang') || 'en';
         let charts = {};
-        let iotHistory = []; // массив { time: Date, value: number }
 
-        // ---------- UI UPDATE ONLY ----------
         function applyLanguage(lang) {
             const t = translations[lang];
             document.getElementById('pageTitle').textContent = t.pageTitle;
@@ -333,18 +321,15 @@
             document.getElementById('chartTitleDepth').innerHTML = `<i class="fas fa-water" style="color: #f093fb;"></i> ${t.chartDepth}`;
             document.getElementById('chartTitleTime').innerHTML = `<i class="fas fa-calendar-alt" style="color: #ffc107;"></i> ${t.chartTime}`;
             document.getElementById('chartTitleRegion').innerHTML = `<i class="fas fa-globe-americas" style="color: #4caf50;"></i> ${t.chartRegion}`;
-            document.getElementById('chartTitleIot').innerHTML = `<i class="fas fa-microchip" style="color: #ff9800;"></i> ${t.chartIot}`;
-
             document.getElementById('tableTitle').textContent = t.tableTitle;
             document.getElementById('thLocation').textContent = t.thLocation;
             document.getElementById('thMagnitude').textContent = t.thMagnitude;
             document.getElementById('thDepth').textContent = t.thDepth;
             document.getElementById('thDate').textContent = t.thDate;
             document.getElementById('thLatLon').textContent = t.thLatLon;
+            document.getElementById('loadingText').textContent = t.loading;
 
-            const loadingSpan = document.querySelector('#topEqTable .loading span');
-            if (loadingSpan) loadingSpan.textContent = t.loading;
-
+            // Update chart labels and colors
             updateChartLabelsAndColors(lang);
         }
 
@@ -354,6 +339,7 @@
             const gridColor = getGridColor();
 
             if (charts.mag) {
+                charts.mag.data.labels = t.magLabels;
                 charts.mag.data.datasets[0].label = t.events;
                 charts.mag.options.plugins.legend.labels.color = textColor;
                 charts.mag.options.scales.x.ticks.color = textColor;
@@ -363,6 +349,7 @@
                 charts.mag.update();
             }
             if (charts.depth) {
+                charts.depth.data.labels = t.depthLabels;
                 charts.depth.options.plugins.legend.labels.color = textColor;
                 charts.depth.update();
             }
@@ -383,15 +370,6 @@
                 charts.region.options.scales.x.grid.color = gridColor;
                 charts.region.options.scales.y.grid.color = gridColor;
                 charts.region.update();
-            }
-            if (charts.iot) {
-                charts.iot.data.datasets[0].label = t.iotVibration;
-                charts.iot.options.plugins.legend.labels.color = textColor;
-                charts.iot.options.scales.x.ticks.color = textColor;
-                charts.iot.options.scales.y.ticks.color = textColor;
-                charts.iot.options.scales.x.grid.color = gridColor;
-                charts.iot.options.scales.y.grid.color = gridColor;
-                charts.iot.update();
             }
         }
 
@@ -455,7 +433,7 @@
             const textColor = getTextColor();
             const gridColor = getGridColor();
 
-            Object.values(charts).forEach(chart => {
+            Object.entries(charts).forEach(([key, chart]) => {
                 if (chart && typeof chart.destroy === 'function') chart.destroy();
             });
             charts = {};
@@ -477,10 +455,10 @@
                 charts.mag = new Chart(magCtx, {
                     type: 'bar',
                     data: {
-                        labels: Object.keys(magBins),
+                        labels: t.magLabels,
                         datasets: [{
                             label: t.events,
-                            data: Object.values(magBins),
+                            data: t.magLabels.map(label => magBins[label]),
                             backgroundColor: ['#667eea','#667eea','#667eea','#667eea','#667eea','#f44336'],
                             borderRadius: 6,
                         }]
@@ -512,9 +490,9 @@
                 charts.depth = new Chart(depthCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: Object.keys(depthBins),
+                        labels: t.depthLabels,
                         datasets: [{
-                            data: Object.values(depthBins),
+                            data: t.depthLabels.map(label => depthBins[label]),
                             backgroundColor: ['#FF6B6B','#FFA06B','#FFD93D','#6BCB77'],
                         }]
                     },
@@ -598,81 +576,6 @@
                     }
                 });
             }
-
-            initIotChart();
-        }
-
-        function initIotChart() {
-            if (charts.iot) return;
-            const ctx = document.getElementById('iotChart');
-            if (!ctx) return;
-            const t = translations[currentLang];
-            const textColor = getTextColor();
-            const gridColor = getGridColor();
-
-            const now = Date.now();
-            iotHistory = [];
-            for (let i = 29; i >= 0; i--) {
-                iotHistory.push({ time: new Date(now - i * 5000), value: 0 }); // каждые 5 сек за последние 2.5 мин
-            }
-
-            charts.iot = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: iotHistory.map(p => p.time.toLocaleTimeString()),
-                    datasets: [{
-                        label: t.iotVibration,
-                        data: iotHistory.map(p => p.value),
-                        borderColor: '#ff9800',
-                        backgroundColor: 'rgba(255,152,0,0.2)',
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 2,
-                        pointBackgroundColor: '#ff9800',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: textColor } }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: textColor, maxTicksLimit: 6 },
-                            grid: { color: gridColor }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: textColor },
-                            grid: { color: gridColor }
-                        }
-                    }
-                }
-            });
-        }
-
-        async function updateIotChart() {
-            try {
-                const resp = await fetch('/api/iot/latest/');
-                const data = await resp.json();
-                let vibration = 0;
-                if (data.sensors && data.sensors.length > 0) {
-                    vibration = data.sensors[0].vibration || 0;
-                }
-
-                const now = new Date();
-                iotHistory.push({ time: now, value: vibration });
-                if (iotHistory.length > 30) iotHistory.shift();
-
-                if (charts.iot) {
-                    charts.iot.data.labels = iotHistory.map(p => p.time.toLocaleTimeString());
-                    charts.iot.data.datasets[0].data = iotHistory.map(p => p.value);
-                    charts.iot.update();
-                }
-            } catch (e) {
-                console.warn('IoT update error:', e);
-            }
         }
 
         function populateTable(eqs) {
@@ -689,14 +592,12 @@
             `).join('');
         }
 
+        // Initialization
         applyLanguage(currentLang);
         loadData();
-        initIotChart();
-        updateIotChart();
 
+        // Periodic refresh for earthquake data only
         setInterval(loadData, 60000);
-
-        setInterval(updateIotChart, 5000);
     </script>
 </body>
 </html>

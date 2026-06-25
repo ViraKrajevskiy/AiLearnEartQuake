@@ -3,6 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+import logging
 
 from .models import Earthquake, Prediction
 from .serializer.serializer import EarthquakeSerializer
@@ -10,6 +11,7 @@ from AiLeranProject.ml_model import EarthquakePredictor
 
 from django.shortcuts import render
 
+logger = logging.getLogger(__name__)
 predictor = EarthquakePredictor()
 
 
@@ -22,8 +24,7 @@ class EarthquakeViewSet(viewsets.ModelViewSet):
 class VibrationAPIView(APIView):
     """
     POST /api/vibration/
-    Endpoint для предсказания магнитуды землетрясения
-
+    Endpoint for predicting earthquake magnitude
     """
 
     def post(self, request):
@@ -31,13 +32,13 @@ class VibrationAPIView(APIView):
             latitude = float(request.data.get('latitude'))
             longitude = float(request.data.get('longitude'))
 
-            #  ОБРАБОТКА DEPTH
+            # Handle depth
             try:
                 depth = float(request.data.get('depth', 10.0))
             except (ValueError, TypeError):
                 depth = 10.0
 
-            # Валидация координат
+            # Validate coordinates
             if latitude < -90 or latitude > 90:
                 return Response(
                     {'error': 'Latitude must be between -90 and 90'},
@@ -49,23 +50,23 @@ class VibrationAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # ВАЛИДАЦИЯ DEPTH
+            # Validate depth
             if depth < 0 or depth > 700:
                 return Response(
                     {'error': 'Depth must be between 0 and 700 km'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Вычисляем признаки (с правильным depth)
+            # Compute features with correct depth
             features = EarthquakePredictor.compute_features(latitude, longitude, depth)
 
-            # Предсказываем
+            # Predict
             predicted_magnitude, confidence, lower_mag, upper_mag = predictor.predict(features)
 
-            # Неопределённость локации (в градусах)
+            # Location uncertainty (in degrees)
             location_uncertainty = 0.2
 
-            # Сохраняем предсказание в БД
+            # Save prediction to database
             prediction = Prediction.objects.create(
                 vibration_count=features[0],  # nearby_quakes_count
                 latitude=latitude,
@@ -81,7 +82,7 @@ class VibrationAPIView(APIView):
                 'upper_magnitude': upper_mag,
                 'location_uncertainty': location_uncertainty,
                 'nearby_quakes_count': features[0],
-                'depth': depth,  #  ВОЗВРАЩАЕМ ПРАВИЛЬНЫЙ DEPTH
+                'depth': depth,
                 'time_since_last_big': features[2],
                 'is_model_trained': predictor.is_trained
             }, status=status.HTTP_201_CREATED)
@@ -92,6 +93,7 @@ class VibrationAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
+            logger.error(f"Prediction error: {e}")
             return Response(
                 {'error': f'Prediction error: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

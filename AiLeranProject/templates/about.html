@@ -20,6 +20,8 @@
             --accent-alt: #f093fb;
             --glass: rgba(18, 18, 40, 0.75);
             --hover-light: rgba(255, 255, 255, 0.05);
+            --scrollbar-thumb: rgba(102, 126, 234, 0.45);
+            --scrollbar-track: rgba(255, 255, 255, 0.04);
         }
 
         body.light-mode {
@@ -31,6 +33,8 @@
             --shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
             --glass: rgba(255, 255, 255, 0.85);
             --hover-light: rgba(0, 0, 0, 0.03);
+            --scrollbar-thumb: rgba(102, 126, 234, 0.4);
+            --scrollbar-track: rgba(0, 0, 0, 0.04);
         }
 
         * {
@@ -47,7 +51,12 @@
             padding: 20px;
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
 
         .container {
             max-width: 1400px;
@@ -109,6 +118,9 @@
             transform: translateY(-3px);
             box-shadow: 0 14px 28px rgba(102, 126, 234, 0.5);
         }
+        .btn:active {
+            transform: translateY(-1px);
+        }
 
         .btn-secondary {
             background: transparent;
@@ -162,6 +174,8 @@
             font-weight: 600;
             transition: all 0.3s;
             white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         .tab-btn.active {
             background: rgba(102, 126, 234, 0.25);
@@ -171,6 +185,9 @@
         }
         .tab-btn:hover {
             border-color: var(--accent);
+        }
+        .tab-btn:active {
+            transform: scale(0.97);
         }
 
         .tab-content {
@@ -231,19 +248,19 @@
             margin-bottom: 15px;
         }
 
-        /* Таблицы с горизонтальной прокруткой на мобильных */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             margin: 20px 0;
+            border-radius: 12px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9em;
-            min-width: 600px; /* гарантирует прокрутку на узких экранах */
+            min-width: 600px;
         }
 
         table th {
@@ -274,6 +291,7 @@
             font-family: 'Courier New', monospace;
             overflow-x: auto;
             word-break: break-word;
+            -webkit-overflow-scrolling: touch;
         }
 
         .code-block {
@@ -288,6 +306,7 @@
             color: #4CAF50;
             white-space: pre-wrap;
             word-break: break-all;
+            -webkit-overflow-scrolling: touch;
         }
 
         .stat-card {
@@ -363,31 +382,16 @@
             color: var(--text);
         }
 
-        /* Мобильная адаптация */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
+        /* Mobile scroll hint for tables */
+        .table-responsive::after {
+            content: '';
+            display: none;
+        }
 
-            .header {
-                padding: 20px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
+        /* ========== MOBILE ADAPTATION ========== */
+        @media (max-width: 1024px) {
             .header h1 {
                 font-size: 1.8em;
-                margin-bottom: 10px;
-            }
-
-            .nav-buttons {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            .btn {
-                padding: 10px 16px;
-                font-size: 0.85em;
             }
 
             .tabs {
@@ -395,64 +399,351 @@
             }
 
             .tab-btn {
-                padding: 8px 14px;
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 16px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+                margin-bottom: 0;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 10px 14px;
                 font-size: 0.85em;
+                border-radius: 10px;
+            }
+
+            .theme-btn, .lang-btn {
+                padding: 8px 10px;
+                font-size: 1em;
+                border-radius: 10px;
+            }
+
+            .tabs {
+                gap: 4px;
+                padding-bottom: 12px;
+                margin-bottom: 20px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 0.8em;
+                border-radius: 10px;
+                flex-shrink: 0;
             }
 
             .section {
-                padding: 20px 15px;
+                padding: 20px 16px;
+                border-radius: 16px;
+                margin-bottom: 16px;
             }
 
             .section h2 {
-                font-size: 1.5em;
+                font-size: 1.4em;
+                margin-bottom: 16px;
+                gap: 8px;
             }
 
             .section h3 {
                 font-size: 1.1em;
+                margin: 16px 0 10px;
+                gap: 6px;
             }
 
             .section p, .section li {
-                font-size: 0.9em;
+                font-size: 0.88em;
+                line-height: 1.7;
+            }
+
+            .section ul, .section ol {
+                margin-left: 18px;
             }
 
             .feature-grid {
                 grid-template-columns: 1fr;
+                gap: 10px;
             }
 
             .stat-card {
                 display: block;
                 margin-right: 0;
                 min-width: 0;
+                width: 100%;
+                padding: 16px;
+            }
+
+            .stat-card strong {
+                font-size: 1.5em;
             }
 
             .code-block {
-                font-size: 0.8em;
+                font-size: 0.75em;
                 padding: 12px;
+                border-radius: 10px;
             }
 
             .formula-box {
-                font-size: 0.85em;
+                font-size: 0.8em;
+                padding: 14px;
+                border-radius: 10px;
             }
 
-            /* Убираем горизонтальные отступы у ul/ol */
-            .section ul, .section ol {
-                margin-left: 20px;
+            .warning-box, .success-box {
+                padding: 12px;
+                border-radius: 10px;
+            }
+
+            /* Table scroll hint for mobile */
+            .table-responsive {
+                position: relative;
+            }
+            .table-responsive::after {
+                display: block;
+                content: '← scroll →';
+                text-align: center;
+                font-size: 0.7em;
+                color: var(--text-secondary);
+                opacity: 0.6;
+                padding: 8px 0 4px;
+                pointer-events: none;
+            }
+
+            table {
+                font-size: 0.8em;
+                min-width: 500px;
+            }
+
+            table th, table td {
+                padding: 10px 8px;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 6px;
+            }
+
+            .header {
+                padding: 14px 16px;
+                border-radius: 14px;
+                margin-bottom: 16px;
+            }
+
             .header h1 {
-                font-size: 1.5em;
+                font-size: 1.3em;
+                width: 100%;
+            }
+
+            .nav-buttons {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.78em;
+                border-radius: 8px;
+                gap: 4px;
+            }
+
+            .theme-btn, .lang-btn {
+                padding: 7px 9px;
+                font-size: 0.9em;
+                border-radius: 8px;
+                gap: 4px;
+            }
+
+            .tabs {
+                gap: 3px;
+                padding-bottom: 10px;
+                margin-bottom: 14px;
             }
 
             .tab-btn {
                 padding: 6px 10px;
+                font-size: 0.75em;
+                border-radius: 8px;
+            }
+            .tab-btn i {
+                display: none;
+            }
+
+            .section {
+                padding: 16px 12px;
+                border-radius: 14px;
+                margin-bottom: 12px;
+            }
+
+            .section h2 {
+                font-size: 1.2em;
+                margin-bottom: 12px;
+            }
+            .section h2 i {
+                font-size: 0.9em;
+            }
+
+            .section h3 {
+                font-size: 1em;
+                margin: 14px 0 8px;
+            }
+
+            .section p, .section li {
+                font-size: 0.82em;
+                line-height: 1.6;
+            }
+
+            .section ul, .section ol {
+                margin-left: 14px;
+            }
+
+            .feature-item {
+                padding: 12px;
+                border-radius: 10px;
+            }
+            .feature-item strong {
+                font-size: 0.9em;
+            }
+            .feature-item small {
                 font-size: 0.8em;
             }
 
+            .stat-card {
+                padding: 12px;
+                margin: 10px 0;
+            }
+            .stat-card strong {
+                font-size: 1.3em;
+            }
+            .stat-card small {
+                font-size: 0.7em;
+            }
+
+            .code-block {
+                font-size: 0.7em;
+                padding: 10px;
+                border-radius: 8px;
+            }
+
+            .formula-box {
+                font-size: 0.75em;
+                padding: 10px 12px;
+                border-radius: 8px;
+            }
+
+            .warning-box, .success-box {
+                padding: 10px 12px;
+                border-radius: 8px;
+                font-size: 0.82em;
+            }
+
+            table {
+                font-size: 0.72em;
+                min-width: 450px;
+            }
+
+            table th, table td {
+                padding: 8px 6px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header {
+                padding: 12px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.1em;
+            }
+
             .btn {
-                padding: 8px 14px;
-                font-size: 0.8em;
+                padding: 7px 10px;
+                font-size: 0.72em;
+            }
+
+            .tab-btn {
+                padding: 5px 8px;
+                font-size: 0.7em;
+            }
+
+            .section {
+                padding: 12px 10px;
+                border-radius: 12px;
+            }
+
+            .section h2 {
+                font-size: 1.1em;
+            }
+
+            .section h3 {
+                font-size: 0.9em;
+            }
+
+            .section p, .section li {
+                font-size: 0.78em;
+            }
+
+            .code-block {
+                font-size: 0.65em;
+            }
+
+            .formula-box {
+                font-size: 0.7em;
+            }
+        }
+
+        /* Landscape mode adjustments */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .header {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .header h1 {
+                font-size: 1.3em;
+                white-space: nowrap;
+            }
+
+            .nav-buttons {
+                width: auto;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .section {
+                padding: 16px;
             }
         }
 
@@ -480,25 +771,19 @@
         </div>
 
         <div class="tabs" id="tabs">
-            <button class="tab-btn active" onclick="switchTab('overview')" id="tabOverview"><i class="fas fa-book"></i> Overview</button>
-            <button class="tab-btn" onclick="switchTab('datasets')" id="tabDatasets"><i class="fas fa-database"></i> Datasets</button>
-            <button class="tab-btn" onclick="switchTab('model')" id="tabModel"><i class="fas fa-brain"></i> Model</button>
-            <button class="tab-btn" onclick="switchTab('features')" id="tabFeatures"><i class="fas fa-sliders-h"></i> Features</button>
-            <button class="tab-btn" onclick="switchTab('formulas')" id="tabFormulas"><i class="fas fa-calculator"></i> Formulas</button>
-            <button class="tab-btn" onclick="switchTab('performance')" id="tabPerformance"><i class="fas fa-chart-line"></i> Performance</button>
+            <button class="tab-btn active" onclick="switchTab('overview')" id="tabOverview"><i class="fas fa-book"></i> <span>Overview</span></button>
+            <button class="tab-btn" onclick="switchTab('datasets')" id="tabDatasets"><i class="fas fa-database"></i> <span>Datasets</span></button>
+            <button class="tab-btn" onclick="switchTab('model')" id="tabModel"><i class="fas fa-brain"></i> <span>Model</span></button>
+            <button class="tab-btn" onclick="switchTab('features')" id="tabFeatures"><i class="fas fa-sliders-h"></i> <span>Features</span></button>
+            <button class="tab-btn" onclick="switchTab('formulas')" id="tabFormulas"><i class="fas fa-calculator"></i> <span>Formulas</span></button>
+            <button class="tab-btn" onclick="switchTab('performance')" id="tabPerformance"><i class="fas fa-chart-line"></i> <span>Performance</span></button>
         </div>
 
-        <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active"></div>
-        <!-- DATASETS TAB -->
         <div id="datasets" class="tab-content"></div>
-        <!-- MODEL TAB -->
         <div id="model" class="tab-content"></div>
-        <!-- FEATURES TAB -->
         <div id="features" class="tab-content"></div>
-        <!-- FORMULAS TAB -->
         <div id="formulas" class="tab-content"></div>
-        <!-- PERFORMANCE TAB -->
         <div id="performance" class="tab-content"></div>
     </div>
 
@@ -524,8 +809,7 @@
                         '<strong>Backend:</strong> Django 6.0 + Python 3.14 + DRF (Django REST Framework)',
                         '<strong>ML Framework:</strong> scikit-learn (RandomForest, StandardScaler)',
                         '<strong>Frontend:</strong> Three.js (3D Globe), Chart.js (Statistics), Vanilla JavaScript',
-                        '<strong>Database:</strong> SQLite3',
-                        '<strong>IoT Integration:</strong> ESP32 + SW-420 vibration sensors'
+                        '<strong>Database:</strong> SQLite3'
                     ],
                     keyComponentsTitle: 'Key Components',
                     keyComponents: [
@@ -533,8 +817,7 @@
                         { title: 'Feature Scaling', desc: 'StandardScaler normalization for all input features' },
                         { title: 'Confidence Intervals', desc: 'Bootstrap aggregation for uncertainty quantification' },
                         { title: 'REST API', desc: 'POST /api/vibration/ for predictions' },
-                        { title: '3D Visualization', desc: 'Interactive globe with earthquake markers' },
-                        { title: 'IoT Sensors', desc: 'Real-time vibration data from ESP32' }
+                        { title: '3D Visualization', desc: 'Interactive globe with earthquake markers' }
                     ]
                 },
                 datasets: {
@@ -695,7 +978,7 @@
                 tabModel: 'Модель',
                 tabFeatures: 'Признаки',
                 tabFormulas: 'Формулы',
-                tabPerformance: 'Производительность',
+                tabPerformance: 'Производ.',
                 overview: {
                     title: 'Обзор проекта',
                     intro: '<strong>EarthquakeAI</strong> — образовательный проект машинного обучения, который предсказывает магнитуду землетрясений на основе исторических сейсмических данных и характеристик окружающей среды. Система объединяет данные USGS с продвинутой регрессией RandomForest для получения прогнозов магнитуды с доверительными интервалами.',
@@ -704,8 +987,7 @@
                         '<strong>Бэкенд:</strong> Django 6.0 + Python 3.14 + DRF (Django REST Framework)',
                         '<strong>ML-фреймворк:</strong> scikit-learn (RandomForest, StandardScaler)',
                         '<strong>Фронтенд:</strong> Three.js (3D-глобус), Chart.js (статистика), Vanilla JavaScript',
-                        '<strong>База данных:</strong> SQLite3',
-                        '<strong>IoT-интеграция:</strong> ESP32 + датчики вибрации SW-420'
+                        '<strong>База данных:</strong> SQLite3'
                     ],
                     keyComponentsTitle: 'Ключевые компоненты',
                     keyComponents: [
@@ -713,8 +995,7 @@
                         { title: 'Масштабирование признаков', desc: 'Нормализация StandardScaler для всех входных признаков' },
                         { title: 'Доверительные интервалы', desc: 'Бутстрэп-агрегация для количественной оценки неопределённости' },
                         { title: 'REST API', desc: 'POST /api/vibration/ для прогнозов' },
-                        { title: '3D-визуализация', desc: 'Интерактивный глобус с маркерами землетрясений' },
-                        { title: 'IoT-датчики', desc: 'Данные вибрации в реальном времени с ESP32' }
+                        { title: '3D-визуализация', desc: 'Интерактивный глобус с маркерами землетрясений' }
                     ]
                 },
                 datasets: {
@@ -878,12 +1159,14 @@
             document.getElementById('statsBtn').innerHTML = `<i class="fas fa-chart-bar"></i> ${t.statsBtn}`;
             langText.textContent = t.langSwitch;
 
-            document.getElementById('tabOverview').innerHTML = `<i class="fas fa-book"></i> ${t.tabOverview}`;
-            document.getElementById('tabDatasets').innerHTML = `<i class="fas fa-database"></i> ${t.tabDatasets}`;
-            document.getElementById('tabModel').innerHTML = `<i class="fas fa-brain"></i> ${t.tabModel}`;
-            document.getElementById('tabFeatures').innerHTML = `<i class="fas fa-sliders-h"></i> ${t.tabFeatures}`;
-            document.getElementById('tabFormulas').innerHTML = `<i class="fas fa-calculator"></i> ${t.tabFormulas}`;
-            document.getElementById('tabPerformance').innerHTML = `<i class="fas fa-chart-line"></i> ${t.tabPerformance}`;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const span = btn.querySelector('span');
+                const icon = btn.querySelector('i');
+                const key = btn.id.replace('tab', '').toLowerCase();
+                if (t['tab' + key.charAt(0).toUpperCase() + key.slice(1)]) {
+                    if (span) span.textContent = t['tab' + key.charAt(0).toUpperCase() + key.slice(1)];
+                }
+            });
 
             buildOverview(lang);
             buildDatasets(lang);
@@ -1081,10 +1364,14 @@ def compute_features(latitude, longitude, depth):
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+
+            // Scroll to top of content on mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById(tabName).scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
-        // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         const icon = themeToggle.querySelector('i');
         function setTheme(isLight) {
@@ -1095,14 +1382,12 @@ def compute_features(latitude, longitude, depth):
         themeToggle.addEventListener('click', () => setTheme(!document.body.classList.contains('light-mode')));
         if (localStorage.getItem('theme') === 'light') setTheme(true);
 
-        // Language toggle
         langToggle.addEventListener('click', () => {
             currentLang = currentLang === 'en' ? 'ru' : 'en';
             localStorage.setItem('earthquakeai_lang', currentLang);
             applyLanguage(currentLang);
         });
 
-        // Initial build
         applyLanguage(currentLang);
     </script>
 </body>

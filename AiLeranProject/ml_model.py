@@ -5,6 +5,7 @@ import joblib
 import os
 from datetime import datetime, timedelta
 from django.db.models import Q
+import math
 
 
 class EarthquakePredictor:
@@ -23,19 +24,20 @@ class EarthquakePredictor:
             self.build_model()
 
     def build_model(self):
-        """Создаёт пустую модель (без обучения)"""
+        """Creates an empty model (without training)"""
         self.model = RandomForestRegressor(
             n_estimators=150,
             max_depth=12,
-            random_state=42
+            random_state=42,
+            n_jobs=-1
         )
         self.is_trained = False
 
     def train(self, X_train, y_train):
         """
-        Обучает модель на данных.
+        Trains the model on data.
         X_train: [nearby_quakes, depth, time_since_last_big, latitude, longitude]
-        y_train: величина землетрясения (magnitude)
+        y_train: earthquake magnitude
         """
         if len(X_train) < 10:
             print(f"⚠️  Need at least 10 samples (have {len(X_train)})")
@@ -47,10 +49,10 @@ class EarthquakePredictor:
             X_scaled = self.scaler.fit_transform(X_train)
             self.model.fit(X_scaled, y_train)
 
-            # Оцениваем ошибку
+            # Evaluate error using cross-validation
             from sklearn.model_selection import cross_val_predict
             from sklearn.metrics import mean_squared_error
-            y_pred = cross_val_predict(self.model, X_scaled, y_train, cv=5)
+            y_pred = cross_val_predict(self.model, X_scaled, y_train, cv=min(5, len(X_train)))
             self.rmse = np.sqrt(mean_squared_error(y_train, y_pred))
 
             print(f"✓ Model trained!")
@@ -59,15 +61,20 @@ class EarthquakePredictor:
             print(f"  Mean magnitude: {y_train.mean():.2f}")
             print(f"  Std: {y_train.std():.2f}")
 
-            self.save_model()
             self.is_trained = True
+            self.save_model()
             return True
 
         except Exception as e:
             print(f"✗ Training error: {e}")
+            self.is_trained = False
             return False
 
     def predict(self, features):
+        """
+        Predicts magnitude from features.
+        Returns: (magnitude, confidence, lower_bound, upper_bound)
+        """
         if self.model is None or not self.is_trained:
             return 0.0, 0.0, 0.0, 0.0
 
@@ -75,28 +82,41 @@ class EarthquakePredictor:
             features_array = np.array(features).reshape(1, -1)
             features_scaled = self.scaler.transform(features_array)
 
-            # Получаем предсказание от каждого из 150 деревьев
+            # Get predictions from all trees
             preds = [tree.predict(features_scaled)[0] for tree in self.model.estimators_]
             magnitude = np.mean(preds)
 
-            # Вычисляем стандартное отклонение "мнений" деревьев
+            # Calculate standard deviation of tree predictions
             std_dev = np.std(preds)
 
-            # Уверенность: чем выше разброс (std_dev), тем ниже confidence
-            # Если деревья сильно спорят, мы менее уверены
+            # Confidence: higher std_dev = lower confidence
             confidence = max(0.6, 1.0 - (std_dev / 2.0))
+            confidence = min(0.99, confidence)
 
+            # Clamp magnitude
             magnitude = max(0.0, min(magnitude, 10.0))
-            margin = 1.96 * std_dev  # Используем текущий разброс вместо RMSE
 
-            return float(magnitude), float(confidence), float(magnitude - margin), float(magnitude + margin)
+            # 95% confidence interval using tree std_dev
+            margin = 1.96 * std_dev
+
+            return float(magnitude), float(confidence), float(max(0, magnitude - margin)), float(magnitude + margin)
 
         except Exception as e:
             print(f"✗ Prediction error: {e}")
             return 0.0, 0.0, 0.0, 0.0
 
+    def predict_batch(self, features_list):
+        """Predicts magnitudes for multiple feature sets"""
+        if self.model is None or not self.is_trained:
+            return [(0.0, 0.0, 0.0, 0.0)] * len(features_list)
+
+        results = []
+        for features in features_list:
+            results.append(self.predict(features))
+        return results
+
     def save_model(self):
-        """Сохраняет модель и скейлер"""
+        """Saves model and scaler"""
         try:
             joblib.dump(self.model, self.model_path)
             joblib.dump(self.scaler, self.scaler_path)
@@ -105,7 +125,7 @@ class EarthquakePredictor:
             print(f"✗ Save error: {e}")
 
     def load_model(self):
-        """Загружает модель и скейлер"""
+        """Loads model and scaler"""
         try:
             self.model = joblib.load(self.model_path)
             self.scaler = joblib.load(self.scaler_path)
@@ -118,7 +138,7 @@ class EarthquakePredictor:
     @staticmethod
     def compute_features(latitude, longitude, depth):
         """
-        Вычисляет признаки для предсказания.
+        Computes features for prediction.
         Returns: [nearby_quakes_count, depth, time_since_last_big, latitude, longitude]
         """
         from AiLeranProject.models import Earthquake
@@ -126,11 +146,12 @@ class EarthquakePredictor:
         now = datetime.now()
         seven_days_ago = now - timedelta(days=7)
 
-        # Радиус поиска (~100 км ≈ 0.9 градуса)
+        # Search radius (~100 km ≈ 0.9 degrees)
         lat_range = 0.9
-        lon_range = 0.9 / np.cos(np.radians(latitude)) if latitude != 90 else 0.9
+        cos_lat = math.cos(math.radians(latitude))
+        lon_range = 0.9 / cos_lat if cos_lat > 0.01 else 0.9
 
-        # Количество землетрясений >2.0 за 7 дней в радиусе
+        # Number of earthquakes >2.0 in the last 7 days within radius
         nearby_quakes = Earthquake.objects.filter(
             timestamp__gte=seven_days_ago,
             magnitude__gt=2.0,
@@ -140,7 +161,7 @@ class EarthquakePredictor:
             longitude__lte=longitude + lon_range
         ).count()
 
-        # Время с последнего крупного землетрясения (≥4.0)
+        # Time since last big earthquake (≥4.0)
         last_big = Earthquake.objects.filter(
             magnitude__gte=4.0,
             latitude__gte=latitude - lat_range,
@@ -155,9 +176,9 @@ class EarthquakePredictor:
             time_since_last_big = 10.0
 
         return [
-            nearby_quakes,  # feature 0
-            depth,  # feature 1
-            time_since_last_big,  # feature 2
-            latitude,  # feature 3
-            longitude  # feature 4
+            float(nearby_quakes),
+            float(depth),
+            float(time_since_last_big),
+            float(latitude),
+            float(longitude)
         ]

@@ -15,7 +15,7 @@ from AiLeranProject.ml_model import EarthquakePredictor
 
 
 def fetch_earthquakes():
-    """Загружает землетрясения с USGS за последние 30 дней"""
+    """Loads earthquakes from USGS for the last 30 days"""
     end_date = datetime.now()
     start_date = end_date - timedelta(days=30)
 
@@ -25,13 +25,14 @@ def fetch_earthquakes():
         'format': 'geojson',
         'starttime': start_date.isoformat(),
         'endtime': end_date.isoformat(),
-        'minmagnitude': 2.5
+        'minmagnitude': 2.5,
+        'orderby': 'time',
     }
 
     print("📡 Fetching earthquake data from USGS...")
 
     try:
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=15)
 
         if response.status_code == 200:
             data = response.json()
@@ -41,14 +42,24 @@ def fetch_earthquakes():
                 props = feature['properties']
                 coords = feature['geometry']['coordinates']
 
+                timestamp = datetime.fromtimestamp(props['time'] / 1000)
+                latitude = coords[1]
+                longitude = coords[0]
+                depth = coords[2] if len(coords) > 2 else None
+                magnitude = props.get('mag')
+                location = props.get('place', 'Unknown')
+
+                if magnitude is None or magnitude < 2.5:
+                    continue
+
                 earthquake, created = Earthquake.objects.get_or_create(
-                    timestamp=datetime.fromtimestamp(props['time'] / 1000),
-                    latitude=coords[1],
-                    longitude=coords[0],
-                    magnitude=props['mag'],
+                    timestamp=timestamp,
+                    latitude=latitude,
+                    longitude=longitude,
                     defaults={
-                        'depth': coords[2] if len(coords) > 2 else None,
-                        'location': props.get('place', 'Unknown')
+                        'magnitude': magnitude,
+                        'depth': depth,
+                        'location': location,
                     }
                 )
 
@@ -68,8 +79,7 @@ def fetch_earthquakes():
 
 
 def train_model():
-    """Обучает модель на данных из БД, используя compute_features()"""
-
+    """Trains the model using data from the database with compute_features()"""
     earthquakes = list(Earthquake.objects.all().order_by('timestamp'))
 
     if len(earthquakes) < 10:
@@ -80,19 +90,21 @@ def train_model():
 
     X = []
     y = []
+    skipped = 0
 
-    # Для каждого землетрясения вычисляем признаки используя compute_features()
+    # For each earthquake, compute features using compute_features()
     for eq in earthquakes:
         try:
             features = EarthquakePredictor.compute_features(
                 eq.latitude,
                 eq.longitude,
-                eq.depth or 10.0  # Default depth если не указана
+                eq.depth or 10.0
             )
             X.append(features)
             y.append(eq.magnitude)
         except Exception as e:
             print(f"⚠️  Skip {eq.location}: {e}")
+            skipped += 1
             continue
 
     if len(X) < 10:
@@ -102,25 +114,50 @@ def train_model():
     X = np.array(X)
     y = np.array(y)
 
-    print(f"✓ Prepared {len(X)} samples")
+    print(f"✓ Prepared {len(X)} samples (skipped {skipped})")
     print(f"  Feature shape: {X.shape}")
+    print(f"  Feature ranges:")
+    print(f"    nearby_quakes: {X[:, 0].min():.0f} - {X[:, 0].max():.0f}")
+    print(f"    depth: {X[:, 1].min():.1f} - {X[:, 1].max():.1f} km")
+    print(f"    time_since_last_big: {X[:, 2].min():.2f} - {X[:, 2].max():.2f} years")
+    print(f"    latitude: {X[:, 3].min():.2f} - {X[:, 3].max():.2f}°")
+    print(f"    longitude: {X[:, 4].min():.2f} - {X[:, 4].max():.2f}°")
     print(f"  Magnitude range: {y.min():.1f} - {y.max():.1f}")
 
-    # Обучаем модель
+    # Train the model
     predictor = EarthquakePredictor()
     success = predictor.train(X, y)
 
     return success
 
 
+def get_model_stats():
+    """Prints statistics about the current model"""
+    predictor = EarthquakePredictor()
+    print(f"\n📊 Model Statistics:")
+    print(f"  Trained: {predictor.is_trained}")
+    print(f"  RMSE: {predictor.rmse:.3f}")
+    print(f"  Model file: {predictor.model_path}")
+    print(f"  Scaler file: {predictor.scaler_path}")
+
+    if predictor.is_trained:
+        print(f"  Estimators: {len(predictor.model.estimators_)}")
+        print(f"  Feature importance:")
+        feature_names = ['nearby_quakes', 'depth', 'time_since_last_big', 'latitude', 'longitude']
+        for name, imp in zip(feature_names, predictor.model.feature_importances_):
+            print(f"    {name}: {imp:.3f}")
+
+
 if __name__ == '__main__':
     print("=== Earthquake AI Training System ===\n")
 
-    # Опционально: загрузить свежие данные с USGS
-    # fetch_earthquakes()
+    # Optional: fetch fresh data from USGS
+    if len(sys.argv) > 1 and sys.argv[1] == '--fetch':
+        fetch_earthquakes()
 
-    # Обучить модель
+    # Train the model
     if train_model():
         print("\n✓ Training complete!")
+        get_model_stats()
     else:
         print("\n✗ Training failed!")

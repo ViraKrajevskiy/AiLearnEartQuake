@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ... весь CSS без изменений ... */
         :root {
             --bg: #020218;
             --panel-bg: rgba(12, 12, 35, 0.85);
@@ -77,13 +76,15 @@
             padding: 5px 12px; border-radius: 20px; font-weight: 600; letter-spacing: 0.5px;
             border: 1px solid rgba(102,126,234,0.3); white-space: nowrap;
         }
-        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .theme-btn, .lang-btn {
             background: transparent; border: 1px solid var(--border); color: var(--text);
             font-size: 1em; padding: 7px 10px; border-radius: 10px; cursor: pointer; transition: 0.3s;
             background: var(--panel-bg); white-space: nowrap;
         }
-        .theme-btn:hover, .lang-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(102,126,234,0.1); }
+        .theme-btn:hover, .lang-btn:hover {
+            border-color: var(--accent); color: var(--accent); background: rgba(102,126,234,0.1);
+        }
         .header-link {
             color: var(--text); text-decoration: none; padding: 6px 12px; border: 1px solid var(--border);
             border-radius: 8px; transition: 0.3s; font-weight: 500; font-size: 0.85em; white-space: nowrap;
@@ -107,7 +108,6 @@
         .panel:nth-child(2) { animation-delay: 0.2s; }
         .panel:nth-child(3) { animation-delay: 0.3s; }
         .panel:nth-child(4) { animation-delay: 0.4s; }
-        .panel:nth-child(5) { animation-delay: 0.5s; }
         .panel:hover { border-color: rgba(102,126,234,0.4); box-shadow: 0 25px 60px rgba(102,126,234,0.2); }
         .panel h3 {
             font-size: 1em; font-weight: 700; margin-bottom: 12px; background: var(--panel-header-gradient);
@@ -186,16 +186,16 @@
         table.mini th { background: var(--table-stripe); font-weight: 600; }
         .checkmark { color: #4CAF50; font-weight: bold; }
         .crossmark { color: #F44336; font-weight: bold; }
-        .iot-event-list { max-height: 180px; overflow-y: auto; padding: 8px; background: rgba(10,10,30,0.5); border-radius: 12px; color: #ffffff !important; }
-        .iot-event-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.8em; }
+
         .mag-low { color: #2ecc71 !important; font-weight: bold; }
         .mag-mid { color: #f1c40f !important; font-weight: bold; }
         .mag-high { color: #e74c3c !important; font-weight: bold; }
-        .iot-legend { margin-top: 10px; font-size: 0.65em; display: flex; gap: 14px; justify-content: center; opacity: 0.85; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
+
         .mobile-menu-btn { display: none; background: transparent; border: 1px solid var(--border); color: var(--text); font-size: 1.3em; padding: 6px 12px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .mobile-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
         .mobile-sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 199; pointer-events: auto; backdrop-filter: blur(4px); }
         .mobile-sidebar-overlay.active { display: block; }
+
         @media (max-width: 900px) {
             .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
             .sidebar { display: block; position: fixed; right: 0; top: 0; height: 100vh; width: 85vw; max-width: 340px; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); margin: 0; border-radius: 20px 0 0 20px; z-index: 200; background: var(--panel-bg); padding: 20px 16px; overflow-y: auto; box-shadow: -10px 0 40px rgba(0,0,0,0.5); }
@@ -207,6 +207,7 @@
             .bottom-info { display: none; }
             .theme-btn, .lang-btn { padding: 6px 8px; font-size: 0.9em; }
         }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
@@ -238,15 +239,6 @@
         <div class="mobile-sidebar-overlay" id="mobileOverlay"></div>
 
         <div class="sidebar" id="sidebar">
-            <div class="panel">
-                <h3 id="iotTitle"><i class="fas fa-microchip"></i> IoT Sensors</h3>
-                <div id="iotPanel" class="iot-event-list"></div>
-                <div class="iot-legend" id="iotLegend">
-                    <span style="color:#2ecc71;">● 0–4 (Low)</span>
-                    <span style="color:#f1c40f;">● 5–9 (Mid)</span>
-                    <span style="color:#e74c3c;">● 10+ (High)</span>
-                </div>
-            </div>
             <div class="panel">
                 <h3 id="displayModeTitle"><i class="fas fa-eye"></i> Display Mode</h3>
                 <div class="mode-toggle">
@@ -287,7 +279,6 @@
                     </div>
                 </div>
                 <div class="tab-content" id="contentLearn">
-                    <!-- блок Learn без изменений -->
                     <h4 id="learnLatTitle">🧭 Latitude (широта)</h4>
                     <div class="info-box-sm" id="learnLatInfo"><strong>North-south coordinate</strong> — measured from the equator</div>
                     <div class="range-row"><span>🔴 -90° (South Pole)</span><span>🔵 0° (Equator)</span><span>🟢 +90° (North Pole)</span></div>
@@ -341,194 +332,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // ========== ALERT SETTINGS ==========
-        let alertsEnabled = localStorage.getItem('earthquakeai_alerts_enabled') === 'true';
-        let activeEventSource = null;
-        let currentAlertElement = null;
-
-        function requestNotificationPermission() {
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
-        }
-
-        // ========== НОВЫЙ ДЛИННЫЙ ЗВУК СИРЕНЫ ==========
-        function playSirenAlert() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-                // Основной осциллятор с изменяемой частотой
-                const osc1 = audioContext.createOscillator();
-                const gain1 = audioContext.createGain();
-                osc1.connect(gain1);
-                gain1.connect(audioContext.destination);
-
-                // Второй осциллятор для плотности звука
-                const osc2 = audioContext.createOscillator();
-                const gain2 = audioContext.createGain();
-                osc2.connect(gain2);
-                gain2.connect(audioContext.destination);
-
-                osc1.type = 'sawtooth';
-                osc2.type = 'square';
-
-                const now = audioContext.currentTime;
-                const totalDuration = 5.0; // общая длительность около 5 секунд
-
-                // Циклическое изменение частоты для осциллятора 1 (классическая сирена)
-                osc1.frequency.setValueAtTime(400, now);
-                // Первый цикл вверх-вниз
-                osc1.frequency.linearRampToValueAtTime(1200, now + 1.0);
-                osc1.frequency.linearRampToValueAtTime(400, now + 2.0);
-                // Второй цикл
-                osc1.frequency.linearRampToValueAtTime(1200, now + 3.0);
-                osc1.frequency.linearRampToValueAtTime(400, now + 4.0);
-                // Третий цикл
-                osc1.frequency.linearRampToValueAtTime(1200, now + 4.5);
-                osc1.frequency.linearRampToValueAtTime(400, now + totalDuration);
-
-                // Для второго осциллятора делаем небольшой сдвиг и другую форму
-                osc2.frequency.setValueAtTime(450, now);
-                osc2.frequency.linearRampToValueAtTime(1250, now + 0.9);
-                osc2.frequency.linearRampToValueAtTime(450, now + 1.9);
-                osc2.frequency.linearRampToValueAtTime(1250, now + 2.9);
-                osc2.frequency.linearRampToValueAtTime(450, now + 3.9);
-                osc2.frequency.linearRampToValueAtTime(1250, now + 4.4);
-                osc2.frequency.linearRampToValueAtTime(450, now + totalDuration);
-
-                // Громкость
-                gain1.gain.setValueAtTime(0.2, now);
-                gain1.gain.linearRampToValueAtTime(0.25, now + 0.5);
-                gain1.gain.linearRampToValueAtTime(0.15, now + totalDuration - 1.0);
-                gain1.gain.exponentialRampToValueAtTime(0.001, now + totalDuration);
-
-                gain2.gain.setValueAtTime(0.1, now);
-                gain2.gain.linearRampToValueAtTime(0.12, now + 0.5);
-                gain2.gain.linearRampToValueAtTime(0.07, now + totalDuration - 1.0);
-                gain2.gain.exponentialRampToValueAtTime(0.001, now + totalDuration);
-
-                osc1.start(now);
-                osc2.start(now);
-                osc1.stop(now + totalDuration + 0.1);
-                osc2.stop(now + totalDuration + 0.1);
-
-                console.log('🚨 Playing long siren alert');
-            } catch (e) {
-                console.warn('Siren alert not available:', e);
-            }
-        }
-
-        function showEarthquakeAlert(data) {
-            if (currentAlertElement) { currentAlertElement.remove(); currentAlertElement = null; }
-            const alertEl = document.createElement('div');
-            alertEl.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0;
-                background: linear-gradient(135deg, #f44336, #ff6f00);
-                color: white; padding: 20px; text-align: center; z-index: 9999;
-                font-size: 1.1em; font-weight: bold;
-                box-shadow: 0 10px 40px rgba(244,67,54,0.6);
-                animation: slideDown 0.4s ease-out;
-            `;
-            const mag = data.prediction ? data.prediction.magnitude.toFixed(1) : '?';
-            const conf = data.prediction ? (data.prediction.confidence * 100).toFixed(0) : '?';
-            alertEl.innerHTML = `
-                <div style="max-width: 600px; margin: 0 auto; position: relative;">
-                    <strong>⚠️ EARTHQUAKE DETECTED!</strong><br>
-                    📍 ${data.location || 'Unknown'} |
-                    Vibration: ${data.vibration} |
-                    Predicted: M${mag} (${conf}% confidence)<br>
-                    🔋 Battery: ${data.battery || '?'}%
-                    <button id="closeAlertBtn" style="position: absolute; top: -10px; right: 0; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.2em; cursor: pointer; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">✕</button>
-                </div>
-            `;
-            document.body.insertBefore(alertEl, document.body.firstChild);
-            currentAlertElement = alertEl;
-            document.getElementById('closeAlertBtn').addEventListener('click', () => {
-                alertEl.style.animation = 'slideUp 0.4s ease-out';
-                setTimeout(() => { if (alertEl === currentAlertElement) currentAlertElement = null; alertEl.remove(); }, 400);
-            });
-            setTimeout(() => {
-                if (alertEl === currentAlertElement) {
-                    alertEl.style.animation = 'slideUp 0.4s ease-out';
-                    setTimeout(() => { if (alertEl === currentAlertElement) currentAlertElement = null; alertEl.remove(); }, 400);
-                }
-            }, 8000);
-        }
-
-        function showBrowserNotification(data) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                const mag = data.prediction ? `M${data.prediction.magnitude.toFixed(1)}` : 'Unknown magnitude';
-                new Notification(`⚠️ Earthquake Alert!`, {
-                    body: `${data.location || 'Unknown location'}\nVibration: ${data.vibration}\nPredicted: ${mag}`,
-                    icon: '🌍', tag: 'earthquake-alert', badge: '🚨', requireInteraction: true,
-                });
-            }
-        }
-
-        function connectToAlertStream() {
-            if (!alertsEnabled) { console.log('⚠️  Alerts disabled'); return; }
-            if (activeEventSource) { activeEventSource.close(); }
-            console.log('🔗 Connecting to earthquake alert stream...');
-            activeEventSource = new EventSource('/api/iot/alerts/');
-            activeEventSource.onopen = () => console.log('✓ Connected to alert stream');
-            activeEventSource.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    if (data.type === 'connected') { console.log('✓ Alert stream ready'); return; }
-                    if (data.type === 'earthquake') {
-                        console.log('🚨 Earthquake alert received:', data);
-                        playSirenAlert(); // длинная сирена
-                        showEarthquakeAlert(data);
-                        showBrowserNotification(data);
-                        if (data.lat && data.lon && window.flyToCoord) window.flyToCoord(data.lat, data.lon);
-                    }
-                } catch (e) { console.error('Parse error:', e); }
-            };
-            activeEventSource.onerror = () => {
-                console.warn('⚠️  Connection lost, reconnecting in 5s...');
-                activeEventSource.close();
-                setTimeout(connectToAlertStream, 5000);
-            };
-        }
-
-        function addAlertToggle() {
-            const headerActions = document.querySelector('.header-actions');
-            if (!headerActions) return;
-            const toggleBtn = document.createElement('button');
-            toggleBtn.id = 'alertToggle';
-            toggleBtn.className = 'theme-btn';
-            toggleBtn.title = 'Toggle earthquake alerts';
-            const updateIcon = () => toggleBtn.innerHTML = alertsEnabled ? '<i class="fas fa-bell"></i>' : '<i class="fas fa-bell-slash"></i>';
-            updateIcon();
-            toggleBtn.addEventListener('click', () => {
-                alertsEnabled = !alertsEnabled;
-                localStorage.setItem('earthquakeai_alerts_enabled', alertsEnabled);
-                updateIcon();
-                if (alertsEnabled) {
-                    console.log('✓ Alerts enabled');
-                    requestNotificationPermission();
-                    connectToAlertStream();
-                } else {
-                    console.log('✓ Alerts disabled');
-                    if (activeEventSource) { activeEventSource.close(); activeEventSource = null; }
-                    if (currentAlertElement) { currentAlertElement.remove(); currentAlertElement = null; }
-                }
-            });
-            headerActions.insertBefore(toggleBtn, headerActions.firstChild);
-        }
-
-        const alertStyles = document.createElement('style');
-        alertStyles.textContent = `
-            @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            @keyframes slideUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
-        `;
-        document.head.appendChild(alertStyles);
-
-        // ========== TRANSLATIONS (полный объект) ==========
+        // ========== TRANSLATIONS ==========
         const translations = {
             en: {
                 badge: 'Predict & Learn', statistics: '📊 Statistics', about: '📖 About',
-                iotTitle: '🔧 IoT Sensors', displayModeTitle: '👁 Display Mode', modeCircles: '🔵 Circles', modeFlags: '🚩 Flags',
+                displayModeTitle: '👁 Display Mode', modeCircles: '🔵 Circles', modeFlags: '🚩 Flags',
                 predictTab: '⚡ Predict', learnTab: '📚 Learn', labelLat: 'Latitude — between -90 and +90',
                 smallLat: 'Tashkent=41.3 | Moscow=55.75 | LA=34.05 | Tokyo=35.6 | Sydney=-33.87',
                 labelLon: 'Longitude — between -180 and +180', smallLon: 'Tashkent=69.2 | Moscow=37.6 | LA=-118.2 | Tokyo=139.7 | Sydney=151.21',
@@ -547,8 +355,7 @@
                 magScaleTitle: '📐 Magnitude Scale', scaleMicro: '1-3 Micro', scaleMinor: '3-4 Minor', scaleModerate: '4-5 Moderate',
                 scaleStrong: '5-6 Strong', scaleMajor: '6+ Major', recentEqTitle: '📋 Recent Earthquakes', eqLoading: 'Loading...',
                 eqNoData: 'No data', bottomInfo: '🖱 Drag to rotate · Scroll to zoom · Hover for details · Click list to fly',
-                iotLegendLow: '● 0–4 (Low)', iotLegendMid: '● 5–9 (Mid)', iotLegendHigh: '● 10+ (High)',
-                onlineStatus: 'ONLINE', offlineStatus: 'OFFLINE', noData: 'Нет данных', errorLoading: 'Ошибка загрузки',
+                noData: 'No data', errorLoading: 'Error loading',
                 alertLat: '❌ Latitude must be between -90 and +90', alertLon: '❌ Longitude must be between -180 and +180',
                 alertDepth: '❌ Depth must be between 0 and 700 km', apiUnavailable: 'API unavailable', na: 'N/A',
                 predictionFailed: 'Prediction failed', predictedLocation: 'Predicted', ocean: 'Ocean', offlineEst: 'Estimated',
@@ -556,7 +363,7 @@
             },
             ru: {
                 badge: 'Прогноз и Обучение', statistics: '📊 Статистика', about: '📖 О проекте',
-                iotTitle: '🔧 IoT Датчики', displayModeTitle: '👁 Режим отображения', modeCircles: '🔵 Круги', modeFlags: '🚩 Флажки',
+                displayModeTitle: '👁 Режим отображения', modeCircles: '🔵 Круги', modeFlags: '🚩 Флажки',
                 predictTab: '⚡ Прогноз', learnTab: '📚 Обучение', labelLat: 'Широта — от -90 до +90',
                 smallLat: 'Ташкент=41.3 | Москва=55.75 | LA=34.05 | Токио=35.6 | Сидней=-33.87',
                 labelLon: 'Долгота — от -180 до +180', smallLon: 'Ташкент=69.2 | Москва=37.6 | LA=-118.2 | Токио=139.7 | Сидней=151.21',
@@ -575,8 +382,7 @@
                 magScaleTitle: '📐 Шкала магнитуд', scaleMicro: '1-3 Микро', scaleMinor: '3-4 Малое', scaleModerate: '4-5 Умеренное',
                 scaleStrong: '5-6 Сильное', scaleMajor: '6+ Крупное', recentEqTitle: '📋 Последние землетрясения', eqLoading: 'Загрузка...',
                 eqNoData: 'Нет данных', bottomInfo: '🖱 Вращайте перетаскиванием · Зум колёсиком · Наведите на маркеры · Клик в списке — перелёт',
-                iotLegendLow: '● 0–4 (Низк.)', iotLegendMid: '● 5–9 (Сред.)', iotLegendHigh: '● 10+ (Выс.)',
-                onlineStatus: 'ОНЛАЙН', offlineStatus: 'ОФФЛАЙН', noData: 'Нет данных', errorLoading: 'Ошибка загрузки',
+                noData: 'Нет данных', errorLoading: 'Ошибка загрузки',
                 alertLat: '❌ Широта должна быть от -90 до +90', alertLon: '❌ Долгота должна быть от -180 до +180',
                 alertDepth: '❌ Глубина должна быть от 0 до 700 км', apiUnavailable: 'API недоступен', na: 'Н/Д',
                 predictionFailed: 'Ошибка прогноза', predictedLocation: 'Прогноз', ocean: 'Океан', offlineEst: 'Оценка (офлайн)',
@@ -588,13 +394,13 @@
         const langToggle = document.getElementById('langToggle');
         const langText = document.getElementById('langText');
 
+        // ========== LANGUAGE ==========
         function applyLanguage(lang) {
             const t = translations[lang];
             document.getElementById('badgeText').textContent = t.badge;
             document.getElementById('linkStatistics').childNodes[0].textContent = t.statistics;
             document.getElementById('linkAbout').childNodes[0].textContent = t.about;
             langText.textContent = t.langSwitch;
-            document.getElementById('iotTitle').innerHTML = t.iotTitle;
             document.getElementById('displayModeTitle').innerHTML = t.displayModeTitle;
             document.getElementById('modeCircles').innerHTML = t.modeCircles;
             document.getElementById('modeFlags').innerHTML = t.modeFlags;
@@ -646,13 +452,6 @@
                 eqList.innerHTML = t.eqLoading;
             }
             document.getElementById('bottomInfo').innerHTML = `<i class="fas fa-mouse"></i> ${t.bottomInfo}`;
-            const legendSpans = document.querySelectorAll('.iot-legend span');
-            if (legendSpans.length >= 3) {
-                legendSpans[0].innerHTML = t.iotLegendLow;
-                legendSpans[1].innerHTML = t.iotLegendMid;
-                legendSpans[2].innerHTML = t.iotLegendHigh;
-            }
-            updateIoTPanel();
         }
 
         langToggle.addEventListener('click', () => {
@@ -661,6 +460,7 @@
             applyLanguage(currentLang);
         });
 
+        // ========== MOBILE ==========
         document.getElementById('mobileMenuBtn').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobileOverlay');
@@ -672,43 +472,7 @@
             document.getElementById('mobileOverlay').classList.remove('active');
         });
 
-        async function updateIoTPanel() {
-            const panel = document.getElementById('iotPanel');
-            if (!panel) return;
-            const t = translations[currentLang];
-            try {
-                const response = await fetch('/api/iot/latest/');
-                const data = await response.json();
-                panel.innerHTML = '';
-                const statusClass = data.status === 'online' ? '#2ecc71' : '#e74c3c';
-                const statusText = data.status === 'online' ? t.onlineStatus : t.offlineStatus;
-                panel.innerHTML += `<div style="font-size: 0.7em; margin-bottom: 8px; color: ${statusClass}; font-weight: 500;">● ${statusText}</div>`;
-                if (data.sensors && data.sensors.length > 0) {
-                    data.sensors.slice(0, 5).forEach(item => {
-                        const val = item.vibration;
-                        const colorClass = val >= 10 ? 'mag-high' : (val >= 5 ? 'mag-mid' : 'mag-low');
-                        const div = document.createElement('div');
-                        div.className = 'iot-event-item';
-                        div.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="${colorClass}" style="font-size: 1.2em;">●</span>
-                                <span class="${colorClass}">${val} баллов</span>
-                                <span style="margin-left: auto; font-size: 0.65em; opacity: 0.7;">${new Date(item.timestamp).toLocaleTimeString()}</span>
-                            </div>`;
-                        panel.appendChild(div);
-                    });
-                } else {
-                    panel.innerHTML += `<div style="font-size: 0.75em; opacity: 0.6;">${t.noData}</div>`;
-                }
-            } catch (err) {
-                panel.innerHTML = `<div style="font-size: 0.75em; color: #e74c3c;">${t.errorLoading}</div>`;
-            }
-        }
-
-        setInterval(updateIoTPanel, 5000);
-        updateIoTPanel();
-
-        // ========== THREE.JS GLOBE CODE (полный, без изменений) ==========
+        // ========== THREE.JS GLOBE ==========
         (function() {
             const canvas = document.getElementById('canvas');
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -1153,22 +917,6 @@
             setInterval(loadEarthquakes, 45000);
             animate();
         })();
-
-        // ========== INIT ALERTS ON PAGE LOAD ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            addAlertToggle();
-            if (alertsEnabled) {
-                requestNotificationPermission();
-                connectToAlertStream();
-            } else {
-                if (activeEventSource) { activeEventSource.close(); activeEventSource = null; }
-                if (currentAlertElement) { currentAlertElement.remove(); currentAlertElement = null; }
-            }
-        });
-
-        document.addEventListener('click', () => {
-            if (alertsEnabled && 'Notification' in window) requestNotificationPermission();
-        }, { once: true });
 
         applyLanguage(currentLang);
     </script>
