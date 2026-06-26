@@ -197,6 +197,7 @@
             .header h1 { font-size: 1.8em; }
             .filters { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .plotly-chart { min-height: 300px; }
         }
     </style>
 </head>
@@ -205,7 +206,7 @@
         <div class="header">
             <h1 id="pageTitle">📊 Earthquake Statistics — EDA</h1>
             <div style="display: flex; gap: 12px;">
-                <a href="/" class="btn btn-secondary"><i class="fas fa-globe"></i> Back to Map</a>
+                <a href="/" class="btn btn-secondary"><i class="fas fa-globe"></i> <span id="backToMap">Back to Map</span></a>
                 <button class="lang-btn" id="langToggle"><i class="fas fa-language"></i></button>
                 <button class="theme-btn" id="themeToggle"><i class="fas fa-sun"></i></button>
             </div>
@@ -214,49 +215,49 @@
         <!-- STATS CARDS -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Total Earthquakes</div>
+                <div class="stat-label" id="totalLabel">Total Earthquakes</div>
                 <div class="stat-value" id="totalCount">-</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Avg Magnitude</div>
+                <div class="stat-label" id="avgMagLabel">Avg Magnitude</div>
                 <div class="stat-value" id="avgMag">-</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Max Magnitude</div>
+                <div class="stat-label" id="maxMagLabel">Max Magnitude</div>
                 <div class="stat-value" id="maxMag">-</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Avg Depth (km)</div>
+                <div class="stat-label" id="avgDepthLabel">Avg Depth (km)</div>
                 <div class="stat-value" id="avgDepth">-</div>
             </div>
         </div>
 
         <!-- EDA SECTION 1: INTERACTIVE FILTERS -->
         <div class="eda-section">
-            <h2><i class="fas fa-filter"></i> EDA Filters (Interactive)</h2>
+            <h2><i class="fas fa-filter"></i> <span id="filtersTitle">EDA Filters (Interactive)</span></h2>
             <div class="filters">
                 <div class="filter-group">
-                    <label>Magnitude Range:</label>
+                    <label id="magLabel">Magnitude Range:</label>
                     <input type="range" id="magMin" min="0" max="10" value="0" step="0.1">
                     <span id="magMinDisplay">0.0</span>
                 </div>
                 <div class="filter-group">
-                    <label>Depth Range (km):</label>
+                    <label id="depthLabel">Depth Range (km):</label>
                     <input type="range" id="depthMax" min="0" max="800" value="800" step="10">
                     <span id="depthMaxDisplay">800 km</span>
                 </div>
                 <div class="filter-group">
-                    <label>Time Period:</label>
+                    <label id="timeLabel">Time Period:</label>
                     <select id="timePeriod">
-                        <option value="30">Last 30 days</option>
-                        <option value="60">Last 60 days</option>
-                        <option value="90">Last 90 days</option>
-                        <option value="all">All data</option>
+                        <option value="30" id="opt30">Last 30 days</option>
+                        <option value="60" id="opt60">Last 60 days</option>
+                        <option value="90" id="opt90">Last 90 days</option>
+                        <option value="all" id="optAll">All data</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <button class="btn" onclick="applyFilters()" style="margin-top: auto;">
-                        <i class="fas fa-sync"></i> Apply Filters
+                        <i class="fas fa-sync"></i> <span id="applyBtn">Apply Filters</span>
                     </button>
                 </div>
             </div>
@@ -264,50 +265,50 @@
 
         <!-- EDA SECTION 2: MAGNITUDE vs DEPTH SCATTER -->
         <div class="eda-section">
-            <h2><i class="fas fa-chart-scatter"></i> Magnitude vs Depth Analysis</h2>
+            <h2><i class="fas fa-chart-scatter"></i> <span id="scatterTitle">Magnitude vs Depth Analysis</span></h2>
             <div id="scatterPlot" class="plotly-chart"></div>
         </div>
 
         <!-- EDA SECTION 3: MAGNITUDE DISTRIBUTION -->
         <div class="eda-section">
-            <h2><i class="fas fa-chart-bar"></i> Magnitude Distribution (Histogram)</h2>
+            <h2><i class="fas fa-chart-bar"></i> <span id="histTitle">Magnitude Distribution (Histogram)</span></h2>
             <div id="histPlot" class="plotly-chart"></div>
         </div>
 
         <!-- EDA SECTION 4: DEPTH DISTRIBUTION -->
         <div class="eda-section">
-            <h2><i class="fas fa-water"></i> Depth Distribution (Box Plot)</h2>
+            <h2><i class="fas fa-water"></i> <span id="boxTitle">Depth Distribution (Box Plot)</span></h2>
             <div id="boxPlot" class="plotly-chart"></div>
         </div>
 
         <!-- EDA SECTION 5: TIME SERIES -->
         <div class="eda-section">
-            <h2><i class="fas fa-chart-line"></i> Earthquakes Over Time</h2>
+            <h2><i class="fas fa-chart-line"></i> <span id="timeTitle">Earthquakes Over Time</span></h2>
             <div id="timeSeriesPlot" class="plotly-chart"></div>
         </div>
 
-        <!-- EDA SECTION 6: HEATMAP -->
+        <!-- EDA SECTION 6: TOP LOCATIONS (горизонтальная столбчатая) -->
         <div class="eda-section">
-            <h2><i class="fas fa-fire"></i> Geographic Heatmap (Top Locations)</h2>
-            <div id="heatmapPlot" class="plotly-chart"></div>
+            <h2><i class="fas fa-fire"></i> <span id="topLocTitle">Top 10 Earthquake Locations</span></h2>
+            <div id="topLocPlot" class="plotly-chart"></div>
         </div>
 
         <!-- TABLE: TOP EARTHQUAKES -->
         <div class="eda-section">
-            <h2><i class="fas fa-table"></i> Top 20 Strongest Earthquakes</h2>
+            <h2><i class="fas fa-table"></i> <span id="tableTitle">Top 20 Strongest Earthquakes</span></h2>
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>Location</th>
-                            <th>Magnitude</th>
-                            <th>Depth (km)</th>
-                            <th>Date</th>
-                            <th>Coordinates</th>
+                            <th id="thLocation">Location</th>
+                            <th id="thMagnitude">Magnitude</th>
+                            <th id="thDepth">Depth (km)</th>
+                            <th id="thDate">Date</th>
+                            <th id="thCoords">Coordinates</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Loading data...</td></tr>
+                        <tr><td colspan="5" style="text-align: center; padding: 40px;" id="loadingMsg">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -315,79 +316,123 @@
     </div>
 
     <script>
+        // ======================== ПЕРЕВОДЫ ========================
         const translations = {
             en: {
                 title: '📊 Earthquake Statistics — EDA',
                 backToMap: 'Back to Map',
+                totalLabel: 'Total Earthquakes',
+                avgMagLabel: 'Avg Magnitude',
+                maxMagLabel: 'Max Magnitude',
+                avgDepthLabel: 'Avg Depth (km)',
+                filtersTitle: 'EDA Filters (Interactive)',
+                magLabel: 'Magnitude Range:',
+                depthLabel: 'Depth Range (km):',
+                timeLabel: 'Time Period:',
+                opt30: 'Last 30 days',
+                opt60: 'Last 60 days',
+                opt90: 'Last 90 days',
+                optAll: 'All data',
+                applyBtn: 'Apply Filters',
+                scatterTitle: 'Magnitude vs Depth Analysis',
+                histTitle: 'Magnitude Distribution (Histogram)',
+                boxTitle: 'Depth Distribution (Box Plot)',
+                timeTitle: 'Earthquakes Over Time',
+                topLocTitle: 'Top 10 Earthquake Locations',
+                tableTitle: 'Top 20 Strongest Earthquakes',
+                thLocation: 'Location',
+                thMagnitude: 'Magnitude',
+                thDepth: 'Depth (km)',
+                thDate: 'Date',
+                thCoords: 'Coordinates',
+                loading: 'Loading data...',
+                noData: 'No data available'
             },
             ru: {
                 title: '📊 Статистика землетрясений — EDA',
                 backToMap: 'На карту',
+                totalLabel: 'Всего землетрясений',
+                avgMagLabel: 'Средняя магнитуда',
+                maxMagLabel: 'Максимальная магнитуда',
+                avgDepthLabel: 'Средняя глубина (км)',
+                filtersTitle: 'Интерактивные фильтры',
+                magLabel: 'Диапазон магнитуды:',
+                depthLabel: 'Глубина (км):',
+                timeLabel: 'Временной период:',
+                opt30: 'Последние 30 дней',
+                opt60: 'Последние 60 дней',
+                opt90: 'Последние 90 дней',
+                optAll: 'Все данные',
+                applyBtn: 'Применить фильтры',
+                scatterTitle: 'Магнитуда vs Глубина',
+                histTitle: 'Распределение магнитуд (гистограмма)',
+                boxTitle: 'Распределение глубин (ящик с усами)',
+                timeTitle: 'Землетрясения во времени',
+                topLocTitle: 'Топ-10 локаций по числу землетрясений',
+                tableTitle: 'Топ-20 самых сильных землетрясений',
+                thLocation: 'Местоположение',
+                thMagnitude: 'Магнитуда',
+                thDepth: 'Глубина (км)',
+                thDate: 'Дата',
+                thCoords: 'Координаты',
+                loading: 'Загрузка данных...',
+                noData: 'Нет данных'
             }
         };
 
+        // ======================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ========================
         let currentLang = localStorage.getItem('earthquakeai_lang') || 'en';
         let allEarthquakes = [];
         let filteredEarthquakes = [];
 
-        // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.onclick = () => {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-        };
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        }
-
-        // Language Toggle
-        document.getElementById('langToggle').onclick = () => {
-            currentLang = currentLang === 'en' ? 'ru' : 'en';
-            localStorage.setItem('earthquakeai_lang', currentLang);
-            document.getElementById('pageTitle').textContent = translations[currentLang].title;
-        };
-
-        // Filters
-        document.getElementById('magMin').oninput = (e) => {
-            document.getElementById('magMinDisplay').textContent = e.target.value;
-        };
-        document.getElementById('depthMax').oninput = (e) => {
-            document.getElementById('depthMaxDisplay').textContent = e.target.value + ' km';
-        };
-
-        function getPlotlyBgColor() {
-            return document.body.classList.contains('light-mode') ? '#ffffff' : '#0a0a1f';
-        }
-        function getPlotlyTextColor() {
-            return document.body.classList.contains('light-mode') ? '#1a1c2e' : '#eef0ff';
-        }
-        function getPlotlyGridColor() {
-            return document.body.classList.contains('light-mode') ? '#e0e0e0' : 'rgba(255,255,255,0.1)';
-        }
-
+        // ======================== ЗАГРУЗКА ДАННЫХ ========================
         async function loadData() {
             try {
                 const resp = await fetch('/api/earthquakes/');
-                const data = Array.isArray(resp.json) ? resp.json : (await resp.json());
-                allEarthquakes = data.results || data;
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
+                const data = await resp.json();
+                // Если API возвращает объект с полем results, берём его, иначе сам массив
+                allEarthquakes = data.results || data || [];
+                console.log(`✅ Загружено ${allEarthquakes.length} землетрясений`);
 
+                // Инициализируем фильтр (показываем все)
+                filteredEarthquakes = [...allEarthquakes];
                 updateStats();
                 updateCharts();
                 updateTable();
             } catch (e) {
-                console.error('Error loading data:', e);
+                console.error('❌ Ошибка загрузки данных:', e);
+                document.getElementById('loadingMsg').textContent = translations[currentLang].noData;
+                // Показать пустые графики с сообщением
+                showEmptyPlots();
             }
         }
 
+        function showEmptyPlots() {
+            const layout = {
+                annotations: [{
+                    text: translations[currentLang].noData,
+                    showarrow: false,
+                    font: { size: 20, color: '#888' }
+                }],
+                plot_bgcolor: getPlotlyBgColor(),
+                paper_bgcolor: getPlotlyBgColor(),
+                font: { color: getPlotlyTextColor() }
+            };
+            ['scatterPlot', 'histPlot', 'boxPlot', 'timeSeriesPlot', 'topLocPlot'].forEach(id => {
+                Plotly.newPlot(id, [], layout);
+            });
+        }
+
+        // ======================== ФИЛЬТРЫ ========================
         function applyFilters() {
             const magMin = parseFloat(document.getElementById('magMin').value);
             const depthMax = parseFloat(document.getElementById('depthMax').value);
             const timePeriod = document.getElementById('timePeriod').value;
 
-            let now = new Date();
             let startDate = new Date();
-
             if (timePeriod !== 'all') {
                 startDate.setDate(startDate.getDate() - parseInt(timePeriod));
             }
@@ -399,28 +444,60 @@
                        eqDate >= startDate;
             });
 
-            updateCharts();
+            console.log(`🔍 Отфильтровано: ${filteredEarthquakes.length} из ${allEarthquakes.length}`);
+
             updateStats();
+            updateCharts();
             updateTable();
         }
 
+        // ======================== ОБНОВЛЕНИЕ СТАТИСТИКИ ========================
         function updateStats() {
             const eqs = filteredEarthquakes.length > 0 ? filteredEarthquakes : allEarthquakes;
 
             document.getElementById('totalCount').textContent = eqs.length;
 
+            if (eqs.length === 0) {
+                document.getElementById('avgMag').textContent = '-';
+                document.getElementById('maxMag').textContent = '-';
+                document.getElementById('avgDepth').textContent = '-';
+                return;
+            }
+
             const mags = eqs.map(e => e.magnitude);
             const depths = eqs.map(e => e.depth || 0).filter(d => d > 0);
 
-            document.getElementById('avgMag').textContent = (mags.reduce((a,b) => a+b) / mags.length).toFixed(1);
-            document.getElementById('maxMag').textContent = Math.max(...mags).toFixed(1);
-            document.getElementById('avgDepth').textContent = (depths.reduce((a,b) => a+b) / depths.length || 0).toFixed(1);
+            const avgMag = (mags.reduce((a,b) => a+b, 0) / mags.length);
+            const maxMag = Math.max(...mags);
+            const avgDepth = depths.length ? (depths.reduce((a,b) => a+b, 0) / depths.length) : 0;
+
+            document.getElementById('avgMag').textContent = avgMag.toFixed(1);
+            document.getElementById('maxMag').textContent = maxMag.toFixed(1);
+            document.getElementById('avgDepth').textContent = avgDepth.toFixed(1);
         }
 
+        // ======================== ЦВЕТА ДЛЯ ГРАФИКОВ ========================
+        function getPlotlyBgColor() {
+            return document.body.classList.contains('light-mode') ? '#ffffff' : '#0a0a1f';
+        }
+        function getPlotlyTextColor() {
+            return document.body.classList.contains('light-mode') ? '#1a1c2e' : '#eef0ff';
+        }
+        function getPlotlyGridColor() {
+            return document.body.classList.contains('light-mode') ? '#e0e0e0' : 'rgba(255,255,255,0.1)';
+        }
+
+        // ======================== ОБНОВЛЕНИЕ ГРАФИКОВ ========================
         function updateCharts() {
             const eqs = filteredEarthquakes.length > 0 ? filteredEarthquakes : allEarthquakes;
 
-            // SCATTER: Magnitude vs Depth
+            // Если нет данных, показываем пустые графики с сообщением
+            if (eqs.length === 0) {
+                showEmptyPlots();
+                return;
+            }
+
+            // 1) SCATTER: Magnitude vs Depth
             Plotly.newPlot('scatterPlot', [{
                 x: eqs.map(e => e.magnitude),
                 y: eqs.map(e => e.depth || 0),
@@ -436,99 +513,115 @@
                 text: eqs.map(e => `${e.location}<br>M${e.magnitude}<br>${e.depth || 'N/A'} km`),
                 hovertemplate: '%{text}<extra></extra>'
             }], {
-                title: 'Magnitude vs Depth Correlation',
-                xaxis: { title: 'Magnitude', color: getPlotlyTextColor() },
-                yaxis: { title: 'Depth (km)', color: getPlotlyTextColor() },
+                title: 'Magnitude vs Depth',
+                xaxis: { title: 'Magnitude', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
+                yaxis: { title: 'Depth (km)', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
                 plot_bgcolor: getPlotlyBgColor(),
                 paper_bgcolor: getPlotlyBgColor(),
                 font: { color: getPlotlyTextColor() },
                 margin: { t: 50, b: 50, l: 50, r: 50 }
             });
 
-            // HISTOGRAM: Magnitude Distribution
+            // 2) HISTOGRAM: Magnitude Distribution
             Plotly.newPlot('histPlot', [{
                 x: eqs.map(e => e.magnitude),
                 type: 'histogram',
                 nbinsx: 20,
                 marker: { color: '#667eea' }
             }], {
-                title: 'Magnitude Distribution (Histogram)',
-                xaxis: { title: 'Magnitude', color: getPlotlyTextColor() },
-                yaxis: { title: 'Frequency', color: getPlotlyTextColor() },
+                title: 'Magnitude Distribution',
+                xaxis: { title: 'Magnitude', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
+                yaxis: { title: 'Frequency', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
                 plot_bgcolor: getPlotlyBgColor(),
                 paper_bgcolor: getPlotlyBgColor(),
                 font: { color: getPlotlyTextColor() },
                 margin: { t: 50, b: 50, l: 50, r: 50 }
             });
 
-            // BOX PLOT: Depth Distribution
+            // 3) BOX PLOT: Depth Distribution
+            const depthData = eqs.map(e => e.depth || 0).filter(d => d > 0);
             Plotly.newPlot('boxPlot', [{
-                y: eqs.map(e => e.depth || 0).filter(d => d > 0),
+                y: depthData,
                 type: 'box',
                 marker: { color: '#f093fb' }
             }], {
-                title: 'Depth Distribution Analysis',
-                yaxis: { title: 'Depth (km)', color: getPlotlyTextColor() },
+                title: 'Depth Distribution',
+                yaxis: { title: 'Depth (km)', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
                 plot_bgcolor: getPlotlyBgColor(),
                 paper_bgcolor: getPlotlyBgColor(),
                 font: { color: getPlotlyTextColor() },
                 margin: { t: 50, b: 50, l: 50, r: 50 }
             });
 
-            // TIME SERIES
+            // 4) TIME SERIES
             const byDate = {};
             eqs.forEach(eq => {
                 const date = new Date(eq.timestamp).toLocaleDateString();
                 byDate[date] = (byDate[date] || 0) + 1;
             });
+            const sortedDates = Object.keys(byDate).sort((a,b) => new Date(a) - new Date(b));
+            const counts = sortedDates.map(d => byDate[d]);
 
             Plotly.newPlot('timeSeriesPlot', [{
-                x: Object.keys(byDate).sort(),
-                y: Object.values(byDate),
+                x: sortedDates,
+                y: counts,
                 type: 'scatter',
                 mode: 'lines+markers',
                 line: { color: '#ff9800', width: 2 },
                 fill: 'tozeroy'
             }], {
                 title: 'Earthquakes Over Time',
-                xaxis: { title: 'Date', color: getPlotlyTextColor() },
-                yaxis: { title: 'Count', color: getPlotlyTextColor() },
+                xaxis: { title: 'Date', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
+                yaxis: { title: 'Count', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
                 plot_bgcolor: getPlotlyBgColor(),
                 paper_bgcolor: getPlotlyBgColor(),
                 font: { color: getPlotlyTextColor() },
                 margin: { t: 50, b: 50, l: 50, r: 50 }
             });
 
-            // HEATMAP: Geographic
+            // 5) TOP LOCATIONS — горизонтальная столбчатая диаграмма
             const byLocation = {};
             eqs.forEach(eq => {
-                byLocation[eq.location] = (byLocation[eq.location] || 0) + 1;
+                const loc = eq.location || 'Unknown';
+                byLocation[loc] = (byLocation[loc] || 0) + 1;
             });
 
             const topLocs = Object.entries(byLocation)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 10);
 
-            Plotly.newPlot('heatmapPlot', [{
-                x: ['Count'],
-                y: topLocs.map(l => l[0]),
-                z: topLocs.map(l => [[l[1]]]),
-                type: 'heatmap',
-                colorscale: 'YlOrRd'
+            const locNames = topLocs.map(item => item[0]);
+            const locCounts = topLocs.map(item => item[1]);
+
+            Plotly.newPlot('topLocPlot', [{
+                y: locNames,
+                x: locCounts,
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#667eea' }
             }], {
                 title: 'Top 10 Earthquake Locations',
+                xaxis: { title: 'Number of Earthquakes', color: getPlotlyTextColor(), gridcolor: getPlotlyGridColor() },
+                yaxis: { title: '', color: getPlotlyTextColor(), automargin: true },
                 plot_bgcolor: getPlotlyBgColor(),
                 paper_bgcolor: getPlotlyBgColor(),
                 font: { color: getPlotlyTextColor() },
-                margin: { t: 50, b: 50, l: 200, r: 50 }
+                margin: { t: 50, b: 50, l: 150, r: 50 }
             });
         }
 
+        // ======================== ОБНОВЛЕНИЕ ТАБЛИЦЫ ========================
         function updateTable() {
             const eqs = filteredEarthquakes.length > 0 ? filteredEarthquakes : allEarthquakes;
             const sorted = [...eqs].sort((a,b) => b.magnitude - a.magnitude).slice(0, 20);
 
-            document.getElementById('tableBody').innerHTML = sorted.map(eq => `
+            const tbody = document.getElementById('tableBody');
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px;">${translations[currentLang].noData}</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(eq => `
                 <tr>
                     <td>${eq.location || 'Unknown'}</td>
                     <td><strong>M${eq.magnitude.toFixed(1)}</strong></td>
@@ -539,9 +632,73 @@
             `).join('');
         }
 
-        // Load on init
+        // ======================== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ========================
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            document.getElementById('pageTitle').textContent = t.title;
+            document.getElementById('backToMap').textContent = t.backToMap;
+            document.getElementById('totalLabel').textContent = t.totalLabel;
+            document.getElementById('avgMagLabel').textContent = t.avgMagLabel;
+            document.getElementById('maxMagLabel').textContent = t.maxMagLabel;
+            document.getElementById('avgDepthLabel').textContent = t.avgDepthLabel;
+            document.getElementById('filtersTitle').textContent = t.filtersTitle;
+            document.getElementById('magLabel').textContent = t.magLabel;
+            document.getElementById('depthLabel').textContent = t.depthLabel;
+            document.getElementById('timeLabel').textContent = t.timeLabel;
+            document.getElementById('opt30').textContent = t.opt30;
+            document.getElementById('opt60').textContent = t.opt60;
+            document.getElementById('opt90').textContent = t.opt90;
+            document.getElementById('optAll').textContent = t.optAll;
+            document.getElementById('applyBtn').textContent = t.applyBtn;
+            document.getElementById('scatterTitle').textContent = t.scatterTitle;
+            document.getElementById('histTitle').textContent = t.histTitle;
+            document.getElementById('boxTitle').textContent = t.boxTitle;
+            document.getElementById('timeTitle').textContent = t.timeTitle;
+            document.getElementById('topLocTitle').textContent = t.topLocTitle;
+            document.getElementById('tableTitle').textContent = t.tableTitle;
+            document.getElementById('thLocation').textContent = t.thLocation;
+            document.getElementById('thMagnitude').textContent = t.thMagnitude;
+            document.getElementById('thDepth').textContent = t.thDepth;
+            document.getElementById('thDate').textContent = t.thDate;
+            document.getElementById('thCoords').textContent = t.thCoords;
+            // Обновляем загрузочное сообщение, если оно ещё видно
+            const loadingMsg = document.getElementById('loadingMsg');
+            if (loadingMsg) loadingMsg.textContent = t.loading;
+        }
+
+        // ======================== ИНИЦИАЛИЗАЦИЯ ========================
+        // Theme
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.onclick = () => {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+            // Перерисовать графики с новыми цветами
+            updateCharts();
+        };
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+
+        // Language
+        document.getElementById('langToggle').onclick = () => {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            localStorage.setItem('earthquakeai_lang', currentLang);
+            applyLanguage(currentLang);
+        };
+        applyLanguage(currentLang);
+
+        // Filters display
+        document.getElementById('magMin').oninput = (e) => {
+            document.getElementById('magMinDisplay').textContent = e.target.value;
+        };
+        document.getElementById('depthMax').oninput = (e) => {
+            document.getElementById('depthMaxDisplay').textContent = e.target.value + ' km';
+        };
+
+        // Загружаем данные
         loadData();
-        setInterval(loadData, 60000);
+        setInterval(loadData, 60000);  // обновление каждую минуту
     </script>
 </body>
 </html>

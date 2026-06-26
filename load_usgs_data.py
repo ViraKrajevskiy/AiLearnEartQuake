@@ -75,7 +75,7 @@ def train_model():
         return
 
     print(f"\n🤖 Training model on {len(earthquakes)} earthquakes...")
-
+    
     X = []
     y = []
 
